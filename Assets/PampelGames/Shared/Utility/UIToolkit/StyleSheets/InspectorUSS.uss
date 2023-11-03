@@ -1,0 +1,56 @@
+.propertyBlock {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-left: 3px;
+    margin-right: 0;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    background-color: rgb(65, 65, 65);
+}
+
+.propertyBlockHeader {
+    -unity-font-style: normal;
+    -unity-text-align: middle-left;
+    background-color: rgb(53, 53, 53);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgb(36, 36, 36);
+    border-right-color: rgb(36, 36, 36);
+    border-top-color: rgb(36, 36, 36);
+    border-bottom-color: rgb(36, 36, 36);
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 0;
+}
+
+.integerFieldNoLabel {
+    -unity-font-style: normal;
+    -unity-text-align: middle-center;
+    width: 42px;
+    height: 19px;
+}
+
+.drawTopLine {
+    border-top-width: 1px;
+    border-left-color: rgb(36, 36, 36);
+    border-right-color: rgb(36, 36, 36);
+    border-top-color: rgb(36, 36, 36);
+    border-bottom-color: rgb(36, 36, 36);
+    padding-top: 4px;
+    margin-top: 4px;
+}
+
+.drawBottomLine {
+    border-left-color: rgb(36, 36, 36);
+    border-right-color: rgb(36, 36, 36);
+    border-top-color: rgb(36, 36, 36);
+    border-bottom-color: rgb(36, 36, 36);
+    border-bottom-width: 1px;
+    padding-bottom: 4px;
+    margin-bottom: 4px;
+}

@@ -1,0 +1,22 @@
+{
+    "name": "PG.GoreSimulator.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8b468e2fa15bc5d4c8c2701e857defff",
+        "GUID:c568eff07a2e2724d8f686970df4276e",
+        "GUID:505acd845f128ec4e9cda71aaca7f08c",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:e0cd26848372d4e5c891c569017e11f1"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

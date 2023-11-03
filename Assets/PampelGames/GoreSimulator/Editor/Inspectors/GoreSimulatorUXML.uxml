@@ -1,0 +1,121 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:Template name="InspectorHeaderUXML" src="project://database/Assets/PampelGames/Shared/Tools/PGInspector/Editor/Header/InspectorHeaderUXML.uxml?fileID=9197481963319205126&amp;guid=49d8c7a8a49532c43a3d15edbb01ce14&amp;type=3#InspectorHeaderUXML" />
+    <Style src="project://database/Assets/PampelGames/Shared/Utility/UIToolkit/StyleSheets/InspectorUSS.uss?fileID=7433441132597879392&amp;guid=a67aab0cbc3193846a6c4c491a7d7663&amp;type=3#InspectorUSS" />
+    <ui:Instance template="InspectorHeaderUXML" name="InspectorHeaderUXML" />
+    <ui:VisualElement name="GoreSimulator" style="flex-grow: 1; display: flex;">
+        <ui:GroupBox name="TopGroup">
+            <uie:Toolbar name="TopToolbar" style="justify-content: space-between; height: auto; border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; margin-top: 3px; margin-right: 0; margin-bottom: 3px; margin-left: 0; opacity: 1; background-color: rgb(56, 56, 56);">
+                <uie:ToolbarToggle focusable="false" name="visibilityToggle" style="padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; justify-content: center; align-items: center; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px;">
+                    <ui:VisualElement name="visibilityToggleImage" style="background-image: url(&apos;project://database/Assets/PampelGames/GoreSimulator/Editor/Icons/EyeIcon.png?fileID=2800000&amp;guid=b24379f9696068d488c3941a972be3db&amp;type=3#EyeIcon&apos;); width: 24px; height: 24px; -unity-background-scale-mode: stretch-to-fill; margin-top: 2px; margin-right: 2px; margin-bottom: 2px; margin-left: 2px; -unity-background-image-tint-color: rgb(197, 197, 197);" />
+                </uie:ToolbarToggle>
+                <ui:VisualElement name="SetupWrapper" style="flex-grow: 0; flex-direction: row;">
+                    <ui:VisualElement name="SetupLeftWrapper" style="flex-direction: row; align-items: center; justify-content: center;">
+                        <ui:VisualElement name="MeshSetupWrapper" style="flex-direction: row-reverse;">
+                            <ui:VisualElement name="colorSetup" style="border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-left-color: rgb(35, 35, 35); border-right-color: rgb(35, 35, 35); border-top-color: rgb(35, 35, 35); border-bottom-color: rgb(35, 35, 35); margin-left: 0; margin-right: 1px;">
+                                <uie:ColorField value="#FFFFFFFF" name="componentColor" show-eye-dropper="false" show-alpha="false" style="width: 24px; height: 24px; margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px; flex-grow: 1; justify-content: center; align-items: center;" />
+                            </ui:VisualElement>
+                            <uie:ToolbarToggle focusable="false" name="materialsSetup" style="padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; margin-top: 0; margin-right: 3px; margin-bottom: 0; margin-left: 3px; justify-content: center; align-items: center; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px;">
+                                <ui:VisualElement name="materialsSetupImage" style="background-image: url(&apos;project://database/Assets/PampelGames/GoreSimulator/Editor/Icons/Materials.png?fileID=2800000&amp;guid=6792d22170f8307449e5811673cdd713&amp;type=3#Materials&apos;); width: 24px; height: 24px; -unity-background-scale-mode: stretch-to-fill; margin-top: 2px; margin-right: 2px; margin-bottom: 2px; margin-left: 2px; -unity-background-image-tint-color: rgb(255, 255, 255);" />
+                            </uie:ToolbarToggle>
+                        </ui:VisualElement>
+                        <uie:ToolbarToggle focusable="false" name="childrenSetup" style="padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 3px; justify-content: center; align-items: center; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px;">
+                            <ui:VisualElement name="skinnedChildrenSetupImage" style="background-image: url(&apos;project://database/Assets/PampelGames/GoreSimulator/Editor/Icons/SkinnedChildren.png?fileID=2800000&amp;guid=3fa1d4621d82a7f40a9e2deb2a11a0aa&amp;type=3#SkinnedChildren&apos;); width: 24px; height: 24px; -unity-background-scale-mode: stretch-to-fill; margin-top: 2px; margin-right: 2px; margin-bottom: 2px; margin-left: 2px; -unity-background-image-tint-color: rgb(236, 236, 236);" />
+                        </uie:ToolbarToggle>
+                        <uie:ToolbarMenu display-tooltip-when-elided="true" name="eventsSetup" style="margin-left: 9px; margin-right: 6px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;">
+                            <ui:VisualElement name="eventsSetupImage" style="background-image: url(&apos;project://database/Assets/PampelGames/GoreSimulator/Editor/Icons/Events.png?fileID=2800000&amp;guid=ce128e8472c5ecc478c501c8ed5998ee&amp;type=3#Events&apos;); width: 24px; height: 24px; -unity-background-scale-mode: stretch-to-fill; margin-top: 2px; margin-right: 2px; margin-bottom: 2px; margin-left: 2px; -unity-background-image-tint-color: rgb(255, 255, 255);" />
+                        </uie:ToolbarMenu>
+                    </ui:VisualElement>
+                    <uie:ToolbarToggle focusable="false" name="meshSetup" style="padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 3px; justify-content: center; align-items: center; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px;">
+                        <ui:VisualElement name="meshSetupImage" style="background-image: url(&apos;project://database/Assets/PampelGames/GoreSimulator/Editor/Icons/AvatarSettings.png?fileID=2800000&amp;guid=781684903e16bab44b6d8c83b92a8c09&amp;type=3#AvatarSettings&apos;); width: 24px; height: 24px; -unity-background-scale-mode: stretch-to-fill; margin-top: 2px; margin-right: 2px; margin-bottom: 2px; margin-left: 2px; -unity-background-image-tint-color: rgb(236, 236, 236);" />
+                    </uie:ToolbarToggle>
+                </ui:VisualElement>
+            </uie:Toolbar>
+            <ui:GroupBox name="MeshSetupGroup" class="drawTopLine" style="border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px; border-left-color: rgb(27, 27, 27); border-right-color: rgb(27, 27, 27); border-top-color: rgb(27, 27, 27); border-bottom-color: rgb(27, 27, 27); padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px;">
+                <ui:VisualElement name="StorageWrapper" style="flex-direction: row;">
+                    <uie:ObjectField label="Storage" name="storage" style="flex-grow: 1;" />
+                    <ui:Button text="New Storage" parse-escape-sequences="true" display-tooltip-when-elided="true" name="createStorage" />
+                </ui:VisualElement>
+                <uie:ObjectField label="Renderer" type="UnityEngine.SkinnedMeshRenderer, UnityEngine.CoreModule" name="skinnedMeshRenderer" />
+                <ui:VisualElement name="BonesListWrapper" style="border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px; border-left-color: rgb(27, 27, 27); border-right-color: rgb(27, 27, 27); border-top-color: rgb(27, 27, 27); border-bottom-color: rgb(27, 27, 27); margin-top: 6px; padding-left: 6px; padding-right: 6px; padding-top: 6px; padding-bottom: 6px;">
+                    <uie:Toolbar name="BonesListToolbar" style="height: auto; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; margin-top: 3px;">
+                        <ui:VisualElement name="BonesListToolbarLeft" style="flex-grow: 1; flex-shrink: 0; justify-content: center;">
+                            <ui:VisualElement name="BonesListLabelWrapper" class="unity-base-field unity-object-field" style="-unity-text-align: middle-left;">
+                                <ui:Label tabindex="-1" text="Bones" parse-escape-sequences="true" display-tooltip-when-elided="true" name="bonesListLabel" class="unity-base-field__label unity-object-field__label" style="-unity-font-style: bold;" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="BonesListToolbarRight" style="flex-direction: row;">
+                            <uie:ToolbarButton text="?" display-tooltip-when-elided="true" name="bonesSetupHelp" style="width: 30px; -unity-text-align: middle-center; -unity-font-style: bold; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px; padding-left: 3px; padding-right: 3px; padding-top: 3px; padding-bottom: 3px; display: none;" />
+                            <uie:ToolbarMenu display-tooltip-when-elided="true" name="bonesAutoSetup" text="Auto Setup" style="margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px; padding-left: 3px; padding-right: 3px; padding-top: 3px; padding-bottom: 3px; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; -unity-font-style: bold; height: 30px;" />
+                        </ui:VisualElement>
+                    </uie:Toolbar>
+                    <ui:VisualElement name="bonesListParent" />
+                </ui:VisualElement>
+                <ui:GroupBox name="MeshSetupGroupBottom">
+                    <ui:VisualElement name="InitializeSettingsWrapper">
+                        <ui:Toggle label="Mesh Cut" name="setupMeshCut" />
+                        <ui:VisualElement name="MeshCutSubSettings">
+                            <ui:SliderInt picking-mode="Ignore" label="Meshes / Bone" value="2" high-value="5" show-input-field="true" low-value="1" name="meshesPerBone" style="flex-grow: 1;" />
+                        </ui:VisualElement>
+                        <ui:Toggle label="Ragdoll" name="setupRagdoll" class="drawTopLine" />
+                        <ui:VisualElement name="RagdollSubSettings">
+                            <ui:VisualElement name="RagdollAnimatorWrapper" style="flex-direction: row;">
+                                <ui:Toggle label="Disable Animator" name="setupRagdollAnimator" />
+                                <uie:ObjectField name="ragdollAnimator" style="flex-grow: 1;" />
+                            </ui:VisualElement>
+                            <uie:FloatField label="Total Mass" value="42,2" name="ragdollTotalMass" />
+                            <uie:EnumField label="Rotation Axis" value="Center" name="jointOrientation" />
+                            <ui:Toggle label="Inverse" name="inverseDirection" />
+                        </ui:VisualElement>
+                        <ui:Toggle label="Create Collider" name="createCollider" class="drawTopLine" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="InitializeButtonWrapper" style="flex-grow: 1; flex-direction: row; align-self: center;">
+                        <ui:Button text="Initialize" parse-escape-sequences="true" display-tooltip-when-elided="true" name="initializeComponent" style="height: 42px; -unity-font-style: bold; font-size: 16px; border-top-width: 3px; border-right-width: 3px; border-bottom-width: 3px; border-left-width: 3px; border-left-color: rgb(25, 25, 25); border-right-color: rgb(25, 25, 25); border-top-color: rgb(25, 25, 25); border-bottom-color: rgb(25, 25, 25); align-self: center; flex-grow: 1; margin-left: 0; margin-right: 3px; margin-top: 3px; margin-bottom: 3px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+                        <ui:Button text="Clear" parse-escape-sequences="true" display-tooltip-when-elided="true" name="clearComponent" style="height: 42px; border-top-width: 3px; border-right-width: 3px; border-bottom-width: 3px; border-left-width: 3px; border-left-color: rgb(25, 25, 25); border-right-color: rgb(25, 25, 25); border-top-color: rgb(25, 25, 25); border-bottom-color: rgb(25, 25, 25); align-self: center; margin-top: 3px; margin-right: 3px; margin-bottom: 3px; margin-left: 0; flex-grow: 0; width: 62px; -unity-font-style: bold; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+                        <uie:ToolbarToggle focusable="false" label="Test&#10;Meshes" name="createMeshesToggle" value="false" style="flex-shrink: 1; height: 42px; align-self: center; -unity-font-style: bold; -unity-text-align: middle-center; border-left-color: rgb(25, 25, 25); border-right-color: rgb(25, 25, 25); border-top-color: rgb(25, 25, 25); border-bottom-color: rgb(25, 25, 25); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; justify-content: center; align-items: center; width: 62px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; margin-left: 3px; margin-right: 0; margin-top: 3px; margin-bottom: 3px; border-top-left-radius: 3px; border-bottom-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px;" />
+                    </ui:VisualElement>
+                </ui:GroupBox>
+            </ui:GroupBox>
+            <ui:GroupBox name="MaterialSetupGroup" style="border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px; border-left-color: rgb(26, 26, 26); border-right-color: rgb(26, 26, 26); border-top-color: rgb(26, 26, 26); border-bottom-color: rgb(26, 26, 26); margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
+                <ui:VisualElement name="MaterialWrapper">
+                    <uie:ObjectField label="Cut Material" name="cutMaterial" type="UnityEngine.Material, UnityEngine.CoreModule" />
+                    <uie:ObjectField label="Decal Material" name="decalMaterial" type="UnityEngine.Material, UnityEngine.CoreModule" />
+                    <uie:ObjectField label="Physic Material" name="physicMaterial" type="UnityEngine.PhysicMaterial, UnityEngine.PhysicsModule" />
+                </ui:VisualElement>
+            </ui:GroupBox>
+            <ui:GroupBox name="ChildrenSetupGroup" style="border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px; border-left-color: rgb(26, 26, 26); border-right-color: rgb(26, 26, 26); border-top-color: rgb(26, 26, 26); border-bottom-color: rgb(26, 26, 26); margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
+                <uie:EnumField label="Bone Children" value="Center" name="childrenEnum" class="drawBottomLine" />
+                <ui:ListView focusable="true" name="skinnedChildren" />
+            </ui:GroupBox>
+        </ui:GroupBox>
+        <ui:VisualElement name="GoreModuleParent" style="flex-grow: 1;" />
+        <ui:GroupBox name="GoreModuleTemplate" style="display: none;">
+            <uie:Toolbar name="ModuleToolbar" style="height: auto; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; align-self: auto; justify-content: space-between;">
+                <ui:VisualElement name="LeftSideWrapper" style="flex-direction: row;">
+                    <uie:ToolbarToggle focusable="false" value="false" name="ModuleToggle">
+                        <ui:VisualElement name="ModuleImage" style="background-image: url(&apos;project://database/Assets/PampelGames/GoreSimulator/Editor/Icons/BloodStain.png?fileID=2800000&amp;guid=0f29e3359afed7440862e6dcb6ca0d84&amp;type=3#BloodStain&apos;); -unity-background-image-tint-color: rgb(118, 44, 44); -unity-background-scale-mode: stretch-to-fill; width: 50px; height: 50px;" />
+                    </uie:ToolbarToggle>
+                    <ui:VisualElement name="SubIcons" style="flex-grow: 1; flex-direction: row;">
+                        <ui:VisualElement name="subIcon01" style="flex-grow: 1; background-image: url(&apos;project://database/Assets/PampelGames/GoreSimulator/Editor/Icons/Physics.png?fileID=2800000&amp;guid=3a2d4e051c6bc0d4d985f0bc4d8c1c8b&amp;type=3#Physics&apos;); width: 30px; height: 30px;" />
+                        <ui:VisualElement name="subIcon02" style="flex-grow: 1; background-image: url(&apos;project://database/Assets/PampelGames/GoreSimulator/Editor/Icons/MeshSew.png?fileID=2800000&amp;guid=3b240d60323343b4fb56d80d920a647d&amp;type=3#MeshSew&apos;); width: 30px; height: 30px;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="RightSideWrapper" style="flex-direction: row;">
+                    <uie:ToolbarMenu tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="addSubGoreMenu" text="+" style="-unity-font-style: bold; font-size: 16px;" />
+                    <uie:ToolbarMenu tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ModuleMenu" />
+                </ui:VisualElement>
+            </uie:Toolbar>
+            <ui:VisualElement name="ModuleWrapperBottom" style="flex-grow: 1;">
+                <ui:VisualElement name="ModuleProperties" style="flex-grow: 1;" />
+                <ui:GroupBox name="SubModuleParent" style="padding-top: 0; margin-top: 0;" />
+            </ui:VisualElement>
+        </ui:GroupBox>
+        <ui:VisualElement name="SubModuleTemplate" style="flex-grow: 1; display: none;">
+            <uie:Toolbar name="SubModuleToolbar" style="border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; align-self: auto; justify-content: space-between; height: auto;">
+                <ui:VisualElement name="SubModuleImage" style="background-image: url(&apos;project://database/Assets/PampelGames/GoreSimulator/Editor/Icons/BloodStain.png?fileID=2800000&amp;guid=0f29e3359afed7440862e6dcb6ca0d84&amp;type=3#BloodStain&apos;); -unity-background-image-tint-color: rgb(118, 44, 44); -unity-background-scale-mode: stretch-to-fill; width: 31px; height: 31px;" />
+                <uie:ToolbarMenu tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SubModuleMenu" />
+            </uie:Toolbar>
+            <ui:VisualElement name="SubModuleProperties" style="flex-grow: 1;" />
+        </ui:VisualElement>
+        <ui:GroupBox name="UnityEvents" />
+    </ui:VisualElement>
+</ui:UXML>

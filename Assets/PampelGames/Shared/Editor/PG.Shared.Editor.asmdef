@@ -1,0 +1,18 @@
+{
+    "name": "PG.Shared.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:c568eff07a2e2724d8f686970df4276e"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

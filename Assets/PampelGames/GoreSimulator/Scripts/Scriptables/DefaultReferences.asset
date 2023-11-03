@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd8163f65b2753149854c7bdd10062e6, type: 3}
+  m_Name: DefaultReferences
+  m_EditorClassIdentifier: 
+  cutMaterial: {fileID: 2100000, guid: 713df6b2f5ebf904b8c7fe1d31f2cd3a, type: 2}
+  physicMaterial: {fileID: 13400000, guid: 797d54604df8dda46b8abe84ee4aeff9, type: 2}
+  pooledMesh: {fileID: 6928440959110486680, guid: 7fb2f1e5fe6638a4abb81c48278213bd, type: 3}
+  skinnedDecal: {fileID: 2100000, guid: 71cf1dbcaa9d6ed4ebac9917beea175d, type: 2}
+  uvTransformation: {fileID: 2100000, guid: cd93ccc33e6d64e2ba3d7bfec3328b34, type: 2}
+  cutParticle: {fileID: 4242707960745226077, guid: 5ab70116cb13bb24f91cf44ef04f09aa, type: 3}
+  explosionParticle: {fileID: 686832329092492159, guid: 50e706ce4d3bd6448842c164eb8a89bc, type: 3}

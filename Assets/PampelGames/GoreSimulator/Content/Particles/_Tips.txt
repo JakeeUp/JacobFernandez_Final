@@ -1,0 +1,8 @@
+1)
+Ensure that particle effects integrated with surface interactions are configured to only collide with ground surfaces, not the characters themselves.
+(Particle Parent -> Collision -> Collides With)
+
+2)
+All effects are pre-set with the 'Cast Shadows' option turned off. This is to maintain consistent visuals across varying pipelines. 
+However, depending on your requirements, you may choose to reactivate the shaddows for a more realistic look.
+(Particle -> Renderer -> Cast Shaddows)

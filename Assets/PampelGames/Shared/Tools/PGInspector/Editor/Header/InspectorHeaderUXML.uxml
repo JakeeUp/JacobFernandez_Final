@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:VisualElement name="Header" style="border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-left-color: rgb(26, 26, 26); border-right-color: rgb(26, 26, 26); border-top-color: rgb(26, 26, 26); border-bottom-color: rgb(26, 26, 26); border-top-left-radius: 3px; border-bottom-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; margin-top: 0; margin-bottom: 1px;">
+        <ui:VisualElement name="Logo">
+            <ui:VisualElement name="Icons" style="margin-left: 3px; margin-right: 0; margin-top: 1px; margin-bottom: 1px; align-items: stretch; justify-content: space-between; flex-direction: row-reverse;">
+                <ui:VisualElement name="IconsRight" style="flex-direction: row-reverse;">
+                    <ui:VisualElement name="documentation" tooltip="Open the documentation page." style="background-image: url(&apos;project://database/Assets/PampelGames/Shared/Editor/Icons/DocumentationIcon.png?fileID=2800000&amp;guid=893673826e0094443bd45b4020d06618&amp;type=3#DocumentationIcon&apos;); width: 26px; height: 26px; -unity-background-scale-mode: scale-to-fit;" />
+                    <ui:VisualElement name="globalSettings" tooltip="Open Global Settings." style="background-image: url(&apos;project://database/Assets/PampelGames/Shared/Editor/Icons/GlobalSettingsIcon.png?fileID=2800000&amp;guid=b6787669ec9ac4946b421694cf5c7677&amp;type=3#GlobalSettingsIcon&apos;); width: 26px; height: 26px; -unity-background-scale-mode: scale-to-fit;" />
+                    <ui:VisualElement name="additionalIcon01" style="background-image: none; width: 26px; height: 26px; -unity-background-scale-mode: scale-to-fit; display: none;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="IconsLeft">
+                    <ui:VisualElement name="PlayIcons" style="flex-direction: row;">
+                        <ui:VisualElement name="playIcon" tooltip="Execute" class="httpLink" style="width: 14px; height: 14px; margin-right: 2px; background-image: url(&apos;project://database/Assets/PampelGames/Shared/Editor/Icons/play-icon.png?fileID=2800000&amp;guid=280a3d3b2b3c88d4896347097e9e227b&amp;type=3#play-icon&apos;); -unity-background-image-tint-color: rgb(255, 255, 255); -unity-background-scale-mode: scale-to-fit;" />
+                        <ui:VisualElement name="pauseIcon" tooltip="Pause / Resume" class="httpLink" style="background-image: url(&apos;project://database/Assets/PampelGames/Shared/Editor/Icons/pause-icon.png?fileID=2800000&amp;guid=daecae45f4770014589cda5b4e682e6b&amp;type=3#pause-icon&apos;); width: 14px; height: 14px; margin-left: 1px; margin-right: 2px; -unity-background-scale-mode: scale-to-fit;" />
+                        <ui:VisualElement name="stopIcon" tooltip="Stop" class="httpLink" style="background-image: url(&apos;project://database/Assets/PampelGames/Shared/Editor/Icons/stop-icon.png?fileID=2800000&amp;guid=b97713aaebbb62044bc288a1e178dff8&amp;type=3#stop-icon&apos;); width: 14px; height: 14px; margin-left: 2px; margin-right: 2px; -unity-background-scale-mode: scale-to-fit;" />
+                        <ui:VisualElement name="reInitializeIcon" tooltip="Re-Initialize" class="httpLink" style="background-image: url(&apos;project://database/Assets/PampelGames/Shared/Editor/Icons/reInitialize-icon.png?fileID=2800000&amp;guid=962afa0d829883649a43a9796754e995&amp;type=3#reInitialize-icon&apos;); width: 14px; height: 14px; margin-left: 2px; margin-right: 2px; -unity-background-scale-mode: scale-to-fit;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

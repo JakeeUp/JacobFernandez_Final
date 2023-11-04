@@ -26,8 +26,8 @@ public class PlayerLocomotion : MonoBehaviour
     }
     private void HandleMovement()
     {
-        moveDirection = cameraObject.forward * inputManager.verticalInput;
-        moveDirection = moveDirection + cameraObject.right * inputManager.hortizontalInput;
+        moveDirection = cameraObject.forward * inputManager.VerticalInput;
+        moveDirection = moveDirection + cameraObject.right * inputManager.HorizontalInput;
         moveDirection.Normalize();
         moveDirection.y = 0;
         moveDirection = moveDirection * movementSpeed;
@@ -40,8 +40,8 @@ public class PlayerLocomotion : MonoBehaviour
     {
         Vector3 targetDir = Vector3.zero;
 
-        targetDir = cameraObject.forward * inputManager.verticalInput;
-        targetDir = targetDir + cameraObject.right * inputManager.hortizontalInput;
+        targetDir = cameraObject.forward * inputManager.VerticalInput;
+        targetDir = targetDir + cameraObject.right * inputManager.HorizontalInput;
         targetDir.Normalize();
 
         if(targetDir == Vector3.zero)

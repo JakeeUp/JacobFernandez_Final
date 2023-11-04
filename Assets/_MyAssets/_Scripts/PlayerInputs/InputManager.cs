@@ -5,15 +5,21 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
     PlayerControls playerControls;
+    AnimatorManager animatorManager;
 
     [SerializeField] private Vector2 movementInput;
+    [SerializeField] private float moveAmount;
     [SerializeField] private float _verticalInput;
     [SerializeField] private float _horizontalInput;
 
+    private void Awake()
+    {
+        animatorManager = GetComponent<AnimatorManager>();
+    }
 
     private void OnEnable()
     {
-        if(playerControls == null)
+        if (playerControls == null)
         {
             playerControls = new PlayerControls();
 
@@ -27,6 +33,7 @@ public class InputManager : MonoBehaviour
     {
         HandleMovementInput();
     }
+
     private void OnDisable()
     {
         playerControls.Disable();
@@ -36,13 +43,12 @@ public class InputManager : MonoBehaviour
     {
         _verticalInput = movementInput.y;
         _horizontalInput = movementInput.x;
+        moveAmount = Mathf.Clamp01(Mathf.Abs(_horizontalInput) + Mathf.Abs(_verticalInput));
+        animatorManager.UpdateAnimatorValues(0, moveAmount);
     }
 
-
-
     #region encaps
-    public float verticalInput { get { return _verticalInput; } set { _verticalInput = value; } }
-    public float hortizontalInput { get { return _horizontalInput; } set { _horizontalInput = value; } }
-
+    public float VerticalInput { get { return _verticalInput; } set { _verticalInput = value; } }
+    public float HorizontalInput { get { return _horizontalInput; } set { _horizontalInput = value; } }
     #endregion
 }

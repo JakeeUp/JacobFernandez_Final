@@ -40,6 +40,11 @@ public class PlayerLocomotion : MonoBehaviour
     [SerializeField] private float _jumpHeight = 3;
     [SerializeField] private float _gravityIntensity = -9.8f;
 
+    [Header("Air Control")]
+    [SerializeField] private float airControlMultiplier = 0.5f; // Adjusts the strength of air control
+    [SerializeField] private float airControl = 2f;
+    [SerializeField] private float airRotationSpeed = 5f;
+
     [Header("Jump Timing")]
     [SerializeField] private float jumpMaxHoldTime = 0.5f;
     private float jumpTimeCounter;
@@ -66,97 +71,91 @@ public class PlayerLocomotion : MonoBehaviour
     private void HandleMovement()
     {
 
-        if (isJumping || !isGrounded) return;
         moveDirection = cameraObject.forward * inputManager.VerticalInput;
-        moveDirection = moveDirection + cameraObject.right * inputManager.HorizontalInput;
+        moveDirection += cameraObject.right * inputManager.HorizontalInput;
         moveDirection.Normalize();
         moveDirection.y = 0;
 
-        if(isSprinting)
-        {
-            moveDirection = moveDirection * sprintingSpeed;
-        }
-        else
-        {
-            if (inputManager.moveAmount >= 0.5f)
-            {
-                moveDirection = moveDirection * runningSpeed;
-            }
-            else
-            {
-                moveDirection = moveDirection * walkingSpeed;
-            }
-        }
+        float targetSpeed = isSprinting ? sprintingSpeed : inputManager.moveAmount >= 0.5f ? runningSpeed : walkingSpeed;
+        moveDirection *= targetSpeed;
 
-       
-        moveDirection = moveDirection * runningSpeed;
-
-        if (isGrounded && !isJumping)
+        if (isGrounded)
         {
             Vector3 movementVelocity = moveDirection;
-            rb.velocity = movementVelocity;
+            rb.velocity = new Vector3(movementVelocity.x, rb.velocity.y, movementVelocity.z);
+        }
+        else // If the player is not grounded, apply air control
+        {
+            Vector3 airMovement = new Vector3(moveDirection.x * airControlMultiplier, rb.velocity.y, moveDirection.z * airControlMultiplier);
+            rb.velocity = Vector3.Lerp(rb.velocity, airMovement, airControl * Time.fixedDeltaTime);
         }
     }
 
+    [SerializeField]private int maxJumpCount = 2; // Set the maximum number of allowed jumps
+    [SerializeField]private int currentJumpCount = 0;
+
+  
+
     public void HandleJumping()
     {
-        if (isGrounded)
+        if ((isGrounded || currentJumpCount < maxJumpCount) && inputManager.jump_Input)
         {
-            if (inputManager.jump_Input && !isJumping)
-            {
-                isJumping = true;
-                jumpTimeCounter = jumpMaxHoldTime; 
-                animatorManager.animator.SetBool("isJumping", true);
-                animatorManager.PlayTargetAnimation("standing-jump-start", false);
+            currentJumpCount++;
+            isJumping = true; // Remain true for any jump action.
+            jumpTimeCounter = jumpMaxHoldTime; // Reset the timer for holding jump.
+            animatorManager.animator.SetBool("isJumping", true);
+            animatorManager.PlayTargetAnimation("standing-jump-start", false);
 
-                float jumpingVelocity = Mathf.Sqrt(-2 * gravityIntensity * jumpHeight);
-                Vector3 playerVelocity = moveDirection;
-                playerVelocity.y = jumpingVelocity;
-                rb.velocity = playerVelocity;
-            }
+            Jump(); // Perform the jump.
+
+            inputManager.jump_Input = false;
         }
 
-        if (isJumping && inputManager.jump_Input)
+        if (isJumping && inputManager.jump_Input && jumpTimeCounter > 0)
         {
-            if (jumpTimeCounter > 0)
-            {
-                rb.velocity = new Vector3(rb.velocity.x, Mathf.Sqrt(-2 * gravityIntensity * jumpHeight), rb.velocity.z);
-                jumpTimeCounter -= Time.deltaTime;
-            }
+            Jump(); 
+            jumpTimeCounter -= Time.deltaTime;
         }
 
         if (jumpTimeCounter <= 0 || !inputManager.jump_Input)
         {
-            isJumping = false; 
+            // isJumping = false;
         }
     }
 
+    private void Jump()
+    {
+        float jumpingVelocity = Mathf.Sqrt(-2 * gravityIntensity * jumpHeight);
+        rb.velocity = new Vector3(rb.velocity.x, jumpingVelocity, rb.velocity.z);
+    }
+
+    public void ResetJump()
+    {
+        currentJumpCount = 0;
+        isJumping = false; 
+        jumpTimeCounter = 0;
+    }
     private void HandleRotation()
     {
-        if (isJumping)
-            return;
+        //if (isJumping)
+        //    return;
 
-        Vector3 targetDir = Vector3.zero;
-
-        targetDir = cameraObject.forward * inputManager.VerticalInput;
-        targetDir = targetDir + cameraObject.right * inputManager.HorizontalInput;
+        Vector3 targetDir = cameraObject.forward * inputManager.VerticalInput;
+        targetDir += cameraObject.right * inputManager.HorizontalInput;
         targetDir.Normalize();
 
-        if (targetDir == Vector3.zero)
+        if (targetDir.sqrMagnitude > 0.1f)
         {
-            targetDir = transform.forward;
+            targetDir.y = 0;
+
+            Quaternion targetRotation = Quaternion.LookRotation(targetDir);
+
+            float usedRotationSpeed = isGrounded ? rotationSpeed : airRotationSpeed;
+
+            Debug.Log($"Rotating with speed: {usedRotationSpeed} - IsGrounded: {isGrounded}");
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, usedRotationSpeed * Time.deltaTime);
         }
-
-        float yawAngle = Mathf.Atan2(targetDir.x, targetDir.z) * Mathf.Rad2Deg;
-
-        Quaternion yawRotation = Quaternion.Euler(0f, yawAngle, 0f);
-        transform.rotation = Quaternion.Slerp(transform.rotation, yawRotation, rotationSpeed * Time.deltaTime);
-
-        float pitchAngle = Mathf.Atan2(targetDir.y, Mathf.Sqrt(targetDir.x * targetDir.x + targetDir.z * targetDir.z)) * Mathf.Rad2Deg;
-
-        Quaternion pitchRotation = Quaternion.Euler(-pitchAngle, 0f, 0f);
-        cam.cameraPivotTransform.localRotation = Quaternion.Slerp(cam.cameraPivotTransform.localRotation, pitchRotation, rotationSpeed * Time.deltaTime);
-
 
     }
 
@@ -164,7 +163,14 @@ public class PlayerLocomotion : MonoBehaviour
     {
         RaycastHit hit;
         Vector3 rayCastOrigin = transform.position;
-        rayCastOrigin.y = rayCastOrigin.y + rayCastHeightOffset;
+        rayCastOrigin.y += rayCastHeightOffset;
+
+        bool hitGround = Physics.SphereCast(rayCastOrigin, 0.2f, -Vector3.up, out hit, maxDistance, groundLayer);
+
+        if (isGrounded && !hitGround)
+        {
+            isGrounded = false;
+        }
 
         if (!isGrounded && !isJumping)
         {
@@ -173,27 +179,20 @@ public class PlayerLocomotion : MonoBehaviour
                 animatorManager.PlayTargetAnimation("standing-jump-loop", true);
             }
 
-            inAirTimer = inAirTimer + Time.deltaTime;
+            inAirTimer += Time.deltaTime;
             rb.AddForce(transform.forward * leapingVelocity);
             rb.AddForce(-Vector3.up * fallingVelocity * inAirTimer);
         }
 
-        if (Physics.SphereCast(rayCastOrigin, 0.2f, -Vector3.up, out hit, maxDistance, groundLayer))
+        if (hitGround && !isGrounded)
         {
-            if (!isGrounded && playerManager.isInteracting)
+            if (hitGround && !isGrounded)
             {
-                Debug.Log("Player is now grounded.");
-
-                Debug.Log("Playing standing-jump-end animation.");
+                isGrounded = true;
+                isJumping = false; 
+                currentJumpCount = 0; 
                 animatorManager.PlayTargetAnimation("standing-jump-end", true);
             }
-
-            inAirTimer = 0;
-            isGrounded = true;
-        }
-        else
-        {
-            isGrounded = false;
         }
     }
 

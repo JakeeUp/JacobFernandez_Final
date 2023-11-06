@@ -144,7 +144,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: af4faca316ae22645bfdad0638259fc1,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 10.493
+      value: 12.41
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: af4faca316ae22645bfdad0638259fc1,
         type: 3}
@@ -1026,16 +1026,22 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
-  maxDistance: 1
+  maxDistance: 0.8
   _isSprinting: 0
   _isGrounded: 0
   _isJumping: 0
-  _runningSpeed: 2
+  _runningSpeed: 3
   _rotationSpeed: 15
   _walkingSpeed: 0.5
-  _sprintingSpeed: 3.5
+  _sprintingSpeed: 5
+  maxJumpCount: 2
+  currentJumpCount: 0
   _jumpHeight: 3
-  _gravityIntensity: -8
+  _gravityIntensity: -15
+  airControlMultiplier: 0.5
+  airControl: 2
+  airRotationSpeed: 5
+  jumpMaxHoldTime: 0.5
 --- !u!114 &986236470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1206,7 +1212,7 @@ Transform:
   m_GameObject: {fileID: 1381975104}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.244, z: -1.011}
+  m_LocalPosition: {x: 0, y: 1.36, z: -2.47}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

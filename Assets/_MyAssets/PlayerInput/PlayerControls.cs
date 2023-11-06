@@ -286,7 +286,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""257b68f4-c2a2-444f-bf78-602eec5bc529"",
                     ""path"": ""<DualSenseGamepadHID>/buttonSouth"",
-                    ""interactions"": ""Hold"",
+                    ""interactions"": ""Press"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Jump"",

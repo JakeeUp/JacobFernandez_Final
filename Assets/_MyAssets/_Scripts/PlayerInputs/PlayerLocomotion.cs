@@ -94,45 +94,55 @@ public class PlayerLocomotion : MonoBehaviour
     [SerializeField]private int maxJumpCount = 2; // Set the maximum number of allowed jumps
     [SerializeField]private int currentJumpCount = 0;
 
-  
+
 
     public void HandleJumping()
     {
+        // Check if we can jump
         if ((isGrounded || currentJumpCount < maxJumpCount) && inputManager.jump_Input)
         {
             currentJumpCount++;
-            isJumping = true; // Remain true for any jump action.
-            jumpTimeCounter = jumpMaxHoldTime; // Reset the timer for holding jump.
+            isJumping = true; // Indicate that a jump is in progress
+            jumpTimeCounter = jumpMaxHoldTime; // Reset the timer for holding jump
             animatorManager.animator.SetBool("isJumping", true);
             animatorManager.PlayTargetAnimation("standing-jump-start", false);
 
-            Jump(); // Perform the jump.
+            Jump(); // Execute the jump
 
+            // Consume the jump input to prevent repeated jumps until next key press
             inputManager.jump_Input = false;
         }
-
-        if (isJumping && inputManager.jump_Input && jumpTimeCounter > 0)
+        else if (currentJumpCount >= maxJumpCount)
         {
-            Jump(); 
-            jumpTimeCounter -= Time.deltaTime;
+            // If we have reached the maximum jump count, make sure we cannot jump
+            isJumping = false;
         }
 
-        if (jumpTimeCounter <= 0 || !inputManager.jump_Input)
+        // If the player is holding the jump key, apply additional force while we're within the jump time window
+        if (isJumping && inputManager.jump_Input && jumpTimeCounter > 0)
         {
-            // isJumping = false;
+            Jump(); // Continue applying jump force
+            jumpTimeCounter -= Time.deltaTime;
+        }
+        else if (jumpTimeCounter <= 0 || !inputManager.jump_Input)
+        {
+            // If the player has released the jump button or the time window has expired, stop applying force
+            isJumping = false;
         }
     }
 
     private void Jump()
     {
+        // Apply the jump force based on jump height and gravity
         float jumpingVelocity = Mathf.Sqrt(-2 * gravityIntensity * jumpHeight);
         rb.velocity = new Vector3(rb.velocity.x, jumpingVelocity, rb.velocity.z);
     }
 
     public void ResetJump()
     {
+        // Reset jump state when the player lands
         currentJumpCount = 0;
-        isJumping = false; 
+        isJumping = false; // Set to false to allow jumping again
         jumpTimeCounter = 0;
     }
     private void HandleRotation()
@@ -186,13 +196,10 @@ public class PlayerLocomotion : MonoBehaviour
 
         if (hitGround && !isGrounded)
         {
-            if (hitGround && !isGrounded)
-            {
-                isGrounded = true;
-                isJumping = false; 
-                currentJumpCount = 0; 
-                animatorManager.PlayTargetAnimation("standing-jump-end", true);
-            }
+            isGrounded = true;
+            isJumping = false; // Reset jumping state only when landing.
+            currentJumpCount = 0; // Reset the jump count.
+            animatorManager.PlayTargetAnimation("standing-jump-end", true);
         }
     }
 

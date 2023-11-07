@@ -5,8 +5,18 @@ using UnityEngine;
 
 public class PlayerLocomotion : MonoBehaviour
 {
+    public enum PlayerState
+    {
+        Grounded,
+        Jumping,
+        Falling
+    }
+
+    public PlayerState currentState;
+
     PlayerManager playerManager;
     AnimatorManager animatorManager;
+    Animator animator;
  
     InputManager inputManager;
     CameraManager cam;
@@ -14,7 +24,8 @@ public class PlayerLocomotion : MonoBehaviour
     Vector3 moveDirection;
     Transform cameraObject;
     Rigidbody rb;
-
+    private float lastAttackTime;
+    public float attackCooldown = 0.5f;
     [Header("Falliong")]
     [SerializeField] private float _inAirTimer;
     [SerializeField] private float _leapingVelocity;
@@ -41,13 +52,14 @@ public class PlayerLocomotion : MonoBehaviour
     [SerializeField] private float _gravityIntensity = -9.8f;
 
     [Header("Air Control")]
-    [SerializeField] private float airControlMultiplier = 0.5f; // Adjusts the strength of air control
+    [SerializeField] private float airControlMultiplier = 0.5f; 
     [SerializeField] private float airControl = 2f;
     [SerializeField] private float airRotationSpeed = 5f;
 
     [Header("Jump Timing")]
     [SerializeField] private float jumpMaxHoldTime = 0.5f;
     private float jumpTimeCounter;
+
 
     private void Awake()
     {
@@ -57,7 +69,76 @@ public class PlayerLocomotion : MonoBehaviour
         cam = FindObjectOfType<CameraManager>();
         rb = GetComponent<Rigidbody>();
         cameraObject = Camera.main.transform;
+        animator = GetComponent<Animator>();
     }
+
+    private void Update()
+    {
+        switch (currentState)
+        {
+            case PlayerState.Grounded:
+                HandleGrounded();
+                break;
+            case PlayerState.Jumping:
+                HandleJumping();
+                break;
+            case PlayerState.Falling:
+                HandleFalling();
+                break;
+        }
+
+        HandleFallingAndLanding();
+        if (Time.time >= lastAttackTime + attackCooldown)
+        {
+            if (inputManager.CheckForBufferedInput("Attack"))
+            {
+                HandleAttack();
+                lastAttackTime = Time.time; 
+            }
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (currentState == PlayerState.Falling || currentState == PlayerState.Jumping)
+        {
+            ApplyAirControl();
+        }
+    }
+
+    private void HandleFalling()
+    {
+        if (isGrounded && rb.velocity.y <= 0)
+        {
+            TransitionToState(PlayerState.Grounded);
+        }
+    }
+    
+    private void TransitionToState(PlayerState newState)
+    {
+        currentState = newState;
+        
+        switch (newState)
+        {
+            case PlayerState.Grounded:
+                HandleGroundedEntry();
+                break;
+            case PlayerState.Jumping:
+                HandleJumpingEntry();
+                break;
+            case PlayerState.Falling:
+                HandleFallingEntry();
+                break;
+        }
+    }
+
+    public void HandleAttack()
+    {
+        animator.SetTrigger("Attack");
+        animatorManager.PlayTargetAnimation("standing-jump-start", true);
+        inputManager.inputBuffer.ClearInput();
+    }
+
     public void HandleAllMovement()
     {
         HandleFallingAndLanding();
@@ -67,6 +148,52 @@ public class PlayerLocomotion : MonoBehaviour
         }
         HandleMovement();
         HandleRotation();
+    }
+    private void HandleGroundedEntry()
+    {
+        ResetJump();
+        animatorManager.animator.SetBool("isJumping", false);
+        animatorManager.PlayTargetAnimation("standing-jump-end", true);
+    }
+
+   
+    private void HandleGrounded()
+    {
+        if (inputManager.jump_Input && currentJumpCount < maxJumpCount && isGrounded)
+        {
+            TransitionToState(PlayerState.Jumping);
+        }
+    }
+    private void HandleFallingEntry()
+    {
+        animatorManager.animator.SetBool("isJumping", false);
+        animatorManager.PlayTargetAnimation("standing-jump-loop", true);
+    }
+
+    private void ApplyAirControl()
+    {
+        Vector3 airMovement = cameraObject.TransformDirection(new Vector3(inputManager.HorizontalInput, 0, inputManager.VerticalInput));
+
+        float currentAirControlMultiplier = airControlMultiplier;
+        if (!inputManager.jump_Input)
+        {
+            // Option 1: Reduced air control
+            //currentAirControlMultiplier *= 0.5f; // Reduce the air control by half, for example
+
+            // Option 2: Increased gravity (if your character's Rigidbody uses gravity)
+           rb.AddForce(Physics.gravity * Time.fixedDeltaTime);
+
+            // Option 3: Apply drag (reducing horizontal velocity over time)
+            //rb.velocity = new Vector3(rb.velocity.x * 0.95f, rb.velocity.y, rb.velocity.z * 0.95f); // Apply drag
+        }
+
+        airMovement *= currentAirControlMultiplier;
+
+        rb.velocity = new Vector3(
+            Mathf.Lerp(rb.velocity.x, airMovement.x * airControl, Time.fixedDeltaTime),
+            rb.velocity.y, 
+            Mathf.Lerp(rb.velocity.z, airMovement.z * airControl, Time.fixedDeltaTime)
+        );
     }
     private void HandleMovement()
     {
@@ -84,72 +211,91 @@ public class PlayerLocomotion : MonoBehaviour
             Vector3 movementVelocity = moveDirection;
             rb.velocity = new Vector3(movementVelocity.x, rb.velocity.y, movementVelocity.z);
         }
-        else // If the player is not grounded, apply air control
+        else 
         {
             Vector3 airMovement = new Vector3(moveDirection.x * airControlMultiplier, rb.velocity.y, moveDirection.z * airControlMultiplier);
             rb.velocity = Vector3.Lerp(rb.velocity, airMovement, airControl * Time.fixedDeltaTime);
         }
     }
 
-    [SerializeField]private int maxJumpCount = 2; // Set the maximum number of allowed jumps
+    [SerializeField]private int maxJumpCount = 2; 
     [SerializeField]private int currentJumpCount = 0;
 
 
+    [SerializeField]private bool jumpButtonReleased = true;
 
-    public void HandleJumping()
+    #region Jump Functions
+    private void HandleJumpingEntry()
     {
-        // Check if we can jump
-        if ((isGrounded || currentJumpCount < maxJumpCount) && inputManager.jump_Input)
+        if (!isGrounded)
         {
             currentJumpCount++;
-            isJumping = true; // Indicate that a jump is in progress
-            jumpTimeCounter = jumpMaxHoldTime; // Reset the timer for holding jump
-            animatorManager.animator.SetBool("isJumping", true);
-            animatorManager.PlayTargetAnimation("standing-jump-start", false);
-
-            Jump(); // Execute the jump
-
-            // Consume the jump input to prevent repeated jumps until next key press
-            inputManager.jump_Input = false;
-        }
-        else if (currentJumpCount >= maxJumpCount)
-        {
-            // If we have reached the maximum jump count, make sure we cannot jump
-            isJumping = false;
         }
 
-        // If the player is holding the jump key, apply additional force while we're within the jump time window
-        if (isJumping && inputManager.jump_Input && jumpTimeCounter > 0)
+        Jump();
+
+        jumpTimeCounter = jumpMaxHoldTime;
+
+        animatorManager.animator.SetBool("isJumping", true);
+        animatorManager.PlayTargetAnimation("standing-jump-start", true);
+
+    }
+    public void HandleJumping()
+    {
+        if (inputManager.jump_Input && jumpButtonReleased)
         {
-            Jump(); // Continue applying jump force
+            if (isGrounded)
+            {
+                TransitionToState(PlayerState.Jumping);
+                jumpButtonReleased = false; // Player must release the button before it registers another jump
+            }
+            else if (currentState == PlayerState.Falling && currentJumpCount < maxJumpCount)
+            {
+                TransitionToState(PlayerState.Jumping);
+                jumpButtonReleased = false; // Similar as above
+            }
+        }
+
+        if (inputManager.jump_Input && jumpTimeCounter > 0)
+        {
             jumpTimeCounter -= Time.deltaTime;
         }
-        else if (jumpTimeCounter <= 0 || !inputManager.jump_Input)
+        else if (jumpTimeCounter <= 0 && currentState != PlayerState.Falling)
         {
-            // If the player has released the jump button or the time window has expired, stop applying force
-            isJumping = false;
+            TransitionToState(PlayerState.Falling);
+        }
+
+        if (!inputManager.jump_Input)
+        {
+            jumpButtonReleased = true;
         }
     }
 
     private void Jump()
     {
-        // Apply the jump force based on jump height and gravity
+        animatorManager.PlayTargetAnimation("standing-jump-start", true);
+
         float jumpingVelocity = Mathf.Sqrt(-2 * gravityIntensity * jumpHeight);
         rb.velocity = new Vector3(rb.velocity.x, jumpingVelocity, rb.velocity.z);
+    }
+    private void JumpHigher()
+    {
+        float additionalJumpForce = Mathf.Sqrt(-2 * gravityIntensity * jumpHeight) * 0.5f; 
+        rb.AddForce(Vector3.up * additionalJumpForce, ForceMode.Impulse);
     }
 
     public void ResetJump()
     {
-        // Reset jump state when the player lands
         currentJumpCount = 0;
-        isJumping = false; // Set to false to allow jumping again
+        jumpButtonReleased = true;
+        isJumping = false;
         jumpTimeCounter = 0;
+        animatorManager.animator.SetBool("isJumping", false);
     }
+
+    #endregion
     private void HandleRotation()
     {
-        //if (isJumping)
-        //    return;
-
         Vector3 targetDir = cameraObject.forward * inputManager.VerticalInput;
         targetDir += cameraObject.right * inputManager.HorizontalInput;
         targetDir.Normalize();
@@ -172,35 +318,31 @@ public class PlayerLocomotion : MonoBehaviour
     private void HandleFallingAndLanding()
     {
         RaycastHit hit;
-        Vector3 rayCastOrigin = transform.position;
-        rayCastOrigin.y += rayCastHeightOffset;
+        Vector3 rayCastOrigin = transform.position + Vector3.up * rayCastHeightOffset;
+        isGrounded = Physics.SphereCast(rayCastOrigin, 0.2f, Vector3.down, out hit, maxDistance, groundLayer);
 
-        bool hitGround = Physics.SphereCast(rayCastOrigin, 0.2f, -Vector3.up, out hit, maxDistance, groundLayer);
-
-        if (isGrounded && !hitGround)
+        if (isGrounded && currentState != PlayerState.Grounded)
         {
-            isGrounded = false;
+            TransitionToState(PlayerState.Grounded);
         }
-
-        if (!isGrounded && !isJumping)
+        else if (!isGrounded && currentState != PlayerState.Falling && !isJumping)
         {
-            if (!playerManager.isInteracting)
-            {
-                animatorManager.PlayTargetAnimation("standing-jump-loop", true);
-            }
-
-            inAirTimer += Time.deltaTime;
-            rb.AddForce(transform.forward * leapingVelocity);
-            rb.AddForce(-Vector3.up * fallingVelocity * inAirTimer);
+            TransitionToState(PlayerState.Falling);
         }
-
-        if (hitGround && !isGrounded)
+    }
+    private IEnumerator SetGroundedWithDelay()
+    {
+        yield return new WaitForSeconds(0.1f); 
+        isGrounded = true;
+        if (currentState != PlayerState.Grounded)
         {
-            isGrounded = true;
-            isJumping = false; // Reset jumping state only when landing.
-            currentJumpCount = 0; // Reset the jump count.
-            animatorManager.PlayTargetAnimation("standing-jump-end", true);
+            TransitionToState(PlayerState.Grounded);
         }
+    }
+
+    public bool IsCharacterMoving()
+    {
+        return (Mathf.Abs(rb.velocity.x) > 0.1f || Mathf.Abs(rb.velocity.z) > 0.1f);
     }
 
     #region encaps

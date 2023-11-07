@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
+    public InputBuffer inputBuffer = new InputBuffer();
     PlayerControls playerControls;
     PlayerLocomotion playerLocomotion;
     AnimatorManager animatorManager;
@@ -22,6 +23,10 @@ public class InputManager : MonoBehaviour
 
     [SerializeField] private bool b_Input;
     [SerializeField] public bool jump_Input;
+
+    [SerializeField] private bool attackInput;
+    [SerializeField] private bool previousAttackInput = false;
+
 
     private void Awake()
     {
@@ -43,6 +48,9 @@ public class InputManager : MonoBehaviour
 
             playerControls.PlayerActions.Jump.performed += i => jump_Input = true;
             playerControls.PlayerActions.Jump.canceled += i => jump_Input = false;
+
+            playerControls.PlayerActions.Attack.performed += i => attackInput = true;
+            playerControls.PlayerActions.Attack.canceled += i => attackInput = false;
         }
 
         playerControls.Enable();
@@ -53,6 +61,7 @@ public class InputManager : MonoBehaviour
         HandleMovementInput();
         HandleSprintingInput();
         HandleJumpingInput();
+        HandleAttackInput();
     }
 
     private void HandleJumpingInput()
@@ -92,6 +101,30 @@ public class InputManager : MonoBehaviour
         }
         
     }
+
+    public void HandleAttackInput()
+    {
+        if (attackInput && !previousAttackInput)
+        {
+            inputBuffer.BufferInput("Attack");
+            previousAttackInput = attackInput; 
+        }
+
+        if (!attackInput && previousAttackInput)
+        {
+            previousAttackInput = false;
+        }
+    }
+    public bool CheckForBufferedInput(string input)
+    {
+        if (inputBuffer.HasInput(input))
+        {
+            inputBuffer.ClearInput();
+            return true;
+        }
+        return false;
+    }
+
     #region encaps
     public float VerticalInput { get { return _verticalInput; } set { _verticalInput = value; } }
     public float HorizontalInput { get { return _horizontalInput; } set { _horizontalInput = value; } }

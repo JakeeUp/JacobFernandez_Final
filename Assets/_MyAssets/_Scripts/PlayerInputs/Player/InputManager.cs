@@ -8,6 +8,7 @@ public class InputManager : MonoBehaviour
     public InputBuffer inputBuffer = new InputBuffer();
     PlayerControls playerControls;
     PlayerLocomotion playerLocomotion;
+    JumpComponent jump;
     AnimatorManager animatorManager;
 
     [SerializeField] private Vector2 movementInput;
@@ -32,6 +33,7 @@ public class InputManager : MonoBehaviour
     {
         animatorManager = GetComponent<AnimatorManager>();
         playerLocomotion = GetComponent<PlayerLocomotion>();
+        jump = GetComponent<JumpComponent>();
     }
 
     private void OnEnable()
@@ -68,7 +70,7 @@ public class InputManager : MonoBehaviour
     {
         if (jump_Input)
         {
-            playerLocomotion.HandleJumping();
+            jump.HandleJumping();
         }
     }
 

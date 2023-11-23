@@ -20,6 +20,7 @@ public class PlayerLocomotion : MonoBehaviour
  
     InputManager inputManager;
     CameraManager cam;
+    JumpComponent playerJump;
 
     Vector3 moveDirection;
     Transform cameraObject;
@@ -36,8 +37,6 @@ public class PlayerLocomotion : MonoBehaviour
 
     [Header("Movement Flags")]
     [SerializeField] private bool _isSprinting; 
-    [SerializeField] private bool _isGrounded; 
-    [SerializeField] private bool _isJumping; 
 
 
     [Header("Movement Speeds")]
@@ -46,20 +45,14 @@ public class PlayerLocomotion : MonoBehaviour
     [SerializeField] private float _walkingSpeed = 1.5f;
     [SerializeField] private float _sprintingSpeed = 7.5f;
 
-    [Header("Jump Speeds")]
-
-    [SerializeField] private float _jumpHeight = 3;
-    [SerializeField] private float _gravityIntensity = -9.8f;
+ 
 
     [Header("Air Control")]
     [SerializeField] private float airControlMultiplier = 0.5f; 
     [SerializeField] private float airControl = 2f;
     [SerializeField] private float airRotationSpeed = 5f;
 
-    [Header("Jump Timing")]
-    [SerializeField] private float jumpMaxHoldTime = 0.5f;
-    private float jumpTimeCounter;
-
+    
 
     private void Awake()
     {
@@ -68,6 +61,7 @@ public class PlayerLocomotion : MonoBehaviour
         inputManager = GetComponent<InputManager>();
         cam = FindObjectOfType<CameraManager>();
         rb = GetComponent<Rigidbody>();
+        playerJump = GetComponent<JumpComponent>();
         cameraObject = Camera.main.transform;
         animator = GetComponent<Animator>();
     }
@@ -77,10 +71,10 @@ public class PlayerLocomotion : MonoBehaviour
         switch (currentState)
         {
             case PlayerState.Grounded:
-                HandleGrounded();
+                playerJump.CanPlayerJump();
                 break;
             case PlayerState.Jumping:
-                HandleJumping();
+                playerJump.HandleJumping();
                 break;
             case PlayerState.Falling:
                 HandleFalling();
@@ -88,6 +82,7 @@ public class PlayerLocomotion : MonoBehaviour
         }
 
         HandleFallingAndLanding();
+        HandleGrounded(playerJump);
         if (Time.time >= lastAttackTime + attackCooldown)
         {
             if (inputManager.CheckForBufferedInput("Attack"))
@@ -100,6 +95,8 @@ public class PlayerLocomotion : MonoBehaviour
 
     private void FixedUpdate()
     {
+        HandleFalling();
+
         if (currentState == PlayerState.Falling || currentState == PlayerState.Jumping)
         {
             ApplyAirControl();
@@ -108,13 +105,30 @@ public class PlayerLocomotion : MonoBehaviour
 
     private void HandleFalling()
     {
-        if (isGrounded && rb.velocity.y <= 0)
+        if (!playerJump.isGrounded)
         {
-            TransitionToState(PlayerState.Grounded);
+            // If the player is falling and not yet grounded, increase the falling velocity
+            _fallingVelocity += Physics.gravity.y * fallingVelocity * Time.deltaTime;
         }
+        else
+        {
+            // If the player is grounded, reset the falling velocity
+            _fallingVelocity = 0;
+        }
+
+        // Apply the falling velocity to the player's Rigidbody
+        if (currentState == PlayerState.Falling)
+        {
+            Vector3 downwardVelocity = new Vector3(0, _fallingVelocity, 0);
+            rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y + downwardVelocity.y, rb.velocity.z);
+        }
+        //if (playerJump.isGrounded && rb.velocity.y <= 0)
+        //{
+        //    TransitionToState(PlayerState.Grounded);
+        //}
     }
     
-    private void TransitionToState(PlayerState newState)
+    public void TransitionToState(PlayerState newState)
     {
         currentState = newState;
         
@@ -124,9 +138,13 @@ public class PlayerLocomotion : MonoBehaviour
                 HandleGroundedEntry();
                 break;
             case PlayerState.Jumping:
-                HandleJumpingEntry();
+                if (playerJump != null)
+                    playerJump.TriggerJump();
+                else
+                    Debug.Log("jump not ref");
                 break;
             case PlayerState.Falling:
+                _fallingVelocity = 0;
                 HandleFallingEntry();
                 break;
         }
@@ -151,18 +169,18 @@ public class PlayerLocomotion : MonoBehaviour
     }
     private void HandleGroundedEntry()
     {
-        ResetJump();
+        playerJump.ResetJump();
+        playerJump.CurrentJumpCount = 0; // Reset the jump count when grounded
+        _fallingVelocity = 0; // Reset falling velocity when grounded
+
         animatorManager.animator.SetBool("isJumping", false);
         animatorManager.PlayTargetAnimation("standing-jump-end", true);
     }
 
    
-    private void HandleGrounded()
+    private void HandleGrounded(JumpComponent jump)
     {
-        if (inputManager.jump_Input && currentJumpCount < maxJumpCount && isGrounded)
-        {
-            TransitionToState(PlayerState.Jumping);
-        }
+        jump.CanPlayerJump();
     }
     private void HandleFallingEntry()
     {
@@ -206,7 +224,7 @@ public class PlayerLocomotion : MonoBehaviour
         float targetSpeed = isSprinting ? sprintingSpeed : inputManager.moveAmount >= 0.5f ? runningSpeed : walkingSpeed;
         moveDirection *= targetSpeed;
 
-        if (isGrounded)
+        if (playerJump.isGrounded)
         {
             Vector3 movementVelocity = moveDirection;
             rb.velocity = new Vector3(movementVelocity.x, rb.velocity.y, movementVelocity.z);
@@ -218,81 +236,12 @@ public class PlayerLocomotion : MonoBehaviour
         }
     }
 
-    [SerializeField]private int maxJumpCount = 2; 
-    [SerializeField]private int currentJumpCount = 0;
-
-
-    [SerializeField]private bool jumpButtonReleased = true;
+   
 
     #region Jump Functions
-    private void HandleJumpingEntry()
-    {
-        if (!isGrounded)
-        {
-            currentJumpCount++;
-        }
-
-        Jump();
-
-        jumpTimeCounter = jumpMaxHoldTime;
-
-        animatorManager.animator.SetBool("isJumping", true);
-        animatorManager.PlayTargetAnimation("standing-jump-start", true);
-
-    }
-    public void HandleJumping()
-    {
-        if (inputManager.jump_Input && jumpButtonReleased)
-        {
-            if (isGrounded)
-            {
-                TransitionToState(PlayerState.Jumping);
-                jumpButtonReleased = false; // Player must release the button before it registers another jump
-            }
-            else if (currentState == PlayerState.Falling && currentJumpCount < maxJumpCount)
-            {
-                TransitionToState(PlayerState.Jumping);
-                jumpButtonReleased = false; // Similar as above
-            }
-        }
-
-        if (inputManager.jump_Input && jumpTimeCounter > 0)
-        {
-            jumpTimeCounter -= Time.deltaTime;
-        }
-        else if (jumpTimeCounter <= 0 && currentState != PlayerState.Falling)
-        {
-            TransitionToState(PlayerState.Falling);
-        }
-
-        if (!inputManager.jump_Input)
-        {
-            jumpButtonReleased = true;
-        }
-    }
-
-    private void Jump()
-    {
-        animatorManager.PlayTargetAnimation("standing-jump-start", true);
-
-        float jumpingVelocity = Mathf.Sqrt(-2 * gravityIntensity * jumpHeight);
-        rb.velocity = new Vector3(rb.velocity.x, jumpingVelocity, rb.velocity.z);
-    }
-    private void JumpHigher()
-    {
-        float additionalJumpForce = Mathf.Sqrt(-2 * gravityIntensity * jumpHeight) * 0.5f; 
-        rb.AddForce(Vector3.up * additionalJumpForce, ForceMode.Impulse);
-    }
-
-    public void ResetJump()
-    {
-        currentJumpCount = 0;
-        jumpButtonReleased = true;
-        isJumping = false;
-        jumpTimeCounter = 0;
-        animatorManager.animator.SetBool("isJumping", false);
-    }
-
+   
+   
+   
     #endregion
     private void HandleRotation()
     {
@@ -306,9 +255,9 @@ public class PlayerLocomotion : MonoBehaviour
 
             Quaternion targetRotation = Quaternion.LookRotation(targetDir);
 
-            float usedRotationSpeed = isGrounded ? rotationSpeed : airRotationSpeed;
+            float usedRotationSpeed = playerJump.isGrounded ? rotationSpeed : airRotationSpeed;
 
-            Debug.Log($"Rotating with speed: {usedRotationSpeed} - IsGrounded: {isGrounded}");
+            Debug.Log($"Rotating with speed: {usedRotationSpeed} - IsGrounded: {playerJump.isGrounded}");
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, usedRotationSpeed * Time.deltaTime);
         }
@@ -319,21 +268,40 @@ public class PlayerLocomotion : MonoBehaviour
     {
         RaycastHit hit;
         Vector3 rayCastOrigin = transform.position + Vector3.up * rayCastHeightOffset;
-        isGrounded = Physics.SphereCast(rayCastOrigin, 0.2f, Vector3.down, out hit, maxDistance, groundLayer);
+        playerJump.isGrounded = Physics.SphereCast(rayCastOrigin, 0.2f, Vector3.down, out hit, maxDistance, groundLayer);
 
-        if (isGrounded && currentState != PlayerState.Grounded)
+        if (playerJump.isGrounded && currentState != PlayerState.Grounded)
         {
             TransitionToState(PlayerState.Grounded);
         }
-        else if (!isGrounded && currentState != PlayerState.Falling && !isJumping)
+        else if (!playerJump.isGrounded && currentState != PlayerState.Falling && !playerJump.isJumping)
         {
             TransitionToState(PlayerState.Falling);
         }
     }
+    void OnDrawGizmos()
+    {
+        if (!UnityEditor.Selection.Contains(gameObject)) return;
+
+        Vector3 rayCastOrigin = transform.position + Vector3.up * rayCastHeightOffset;
+        Vector3 rayCastDirection = Vector3.down * maxDistance;
+
+        Gizmos.color = playerJump.isGrounded ? Color.green : Color.red;
+
+        Gizmos.DrawRay(rayCastOrigin, rayCastDirection);
+
+        Gizmos.DrawWireSphere(rayCastOrigin, 0.2f);
+
+        if (Physics.SphereCast(rayCastOrigin, 0.2f, Vector3.down, out RaycastHit hit, maxDistance, groundLayer))
+        {
+            Gizmos.DrawWireSphere(rayCastOrigin + Vector3.down * hit.distance, 0.2f);
+        }
+    }
+
     private IEnumerator SetGroundedWithDelay()
     {
         yield return new WaitForSeconds(0.1f); 
-        isGrounded = true;
+        playerJump.isGrounded = true;
         if (currentState != PlayerState.Grounded)
         {
             TransitionToState(PlayerState.Grounded);
@@ -355,13 +323,11 @@ public class PlayerLocomotion : MonoBehaviour
     public float inAirTimer { get { return _inAirTimer; } set { _inAirTimer = value; } }
     public float leapingVelocity { get { return _leapingVelocity; } set { _leapingVelocity = value; } }
     public float fallingVelocity { get { return _fallingVelocity; } set { _fallingVelocity = value; } }
-    public float jumpHeight { get { return _jumpHeight; } set { _jumpHeight = value; } }
-    public float gravityIntensity { get { return _gravityIntensity; } set { _gravityIntensity = value; } }
+  
 
     //bools
     public bool isSprinting { get { return _isSprinting; } set { _isSprinting = value; } }
-    public bool isGrounded { get { return _isGrounded; } set { _isGrounded = value; } }
-    public bool isJumping { get { return _isJumping; } set { _isJumping = value; } }
+  
 
     #endregion
 

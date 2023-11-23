@@ -21,6 +21,7 @@ public class PlayerLocomotion : MonoBehaviour
     InputManager inputManager;
     CameraManager cam;
     JumpComponent playerJump;
+    PlayerStats stats;
 
     Vector3 moveDirection;
     Transform cameraObject;
@@ -56,6 +57,7 @@ public class PlayerLocomotion : MonoBehaviour
 
     private void Awake()
     {
+        stats = GetComponent<PlayerStats>();
         playerManager = GetComponent<PlayerManager>();
         animatorManager = GetComponent<AnimatorManager>();
         inputManager = GetComponent<InputManager>();
@@ -92,7 +94,19 @@ public class PlayerLocomotion : MonoBehaviour
             }
         }
     }
-
+    public void UpdateSprinting(bool trySprint)
+    {
+        if (trySprint && stats.CurrentMana > 20)
+        {
+            // Sprinting logic here
+            isSprinting = true;
+        }
+        else
+        {
+            // Stop sprinting
+            isSprinting = false;
+        }
+    }
     private void FixedUpdate()
     {
         HandleFalling();

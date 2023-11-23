@@ -9,6 +9,7 @@ public class InputManager : MonoBehaviour
     PlayerControls playerControls;
     PlayerLocomotion playerLocomotion;
     JumpComponent jump;
+    PlayerStats stats;
     AnimatorManager animatorManager;
 
     [SerializeField] private Vector2 movementInput;
@@ -16,7 +17,7 @@ public class InputManager : MonoBehaviour
 
     [SerializeField] private float _cameraInputX;
     [SerializeField] private float _cameraInputY;
-    
+
 
     [SerializeField] private float _moveAmount;
     [SerializeField] private float _verticalInput;
@@ -31,6 +32,7 @@ public class InputManager : MonoBehaviour
 
     private void Awake()
     {
+        stats = GetComponent<PlayerStats>();
         animatorManager = GetComponent<AnimatorManager>();
         playerLocomotion = GetComponent<PlayerLocomotion>();
         jump = GetComponent<JumpComponent>();
@@ -61,7 +63,7 @@ public class InputManager : MonoBehaviour
     public void HandleAllInputs()
     {
         HandleMovementInput();
-        HandleSprintingInput();
+        HandleSprintingInput(playerLocomotion.isSprinting);
         HandleJumpingInput();
         HandleAttackInput();
     }
@@ -91,9 +93,9 @@ public class InputManager : MonoBehaviour
         animatorManager.UpdateAnimatorValues(0, moveAmount, playerLocomotion.isSprinting);
     }
 
-    private void HandleSprintingInput()
+    private void HandleSprintingInput(bool trySprint)
     {
-        if (b_Input && moveAmount > 0.5f)
+        if (b_Input && stats.CurrentMana > 20)
         {
             playerLocomotion.isSprinting = true;
         }
@@ -101,7 +103,7 @@ public class InputManager : MonoBehaviour
         {
             playerLocomotion.isSprinting = false;
         }
-        
+
     }
 
     public void HandleAttackInput()
@@ -109,7 +111,7 @@ public class InputManager : MonoBehaviour
         if (attackInput && !previousAttackInput)
         {
             inputBuffer.BufferInput("Attack");
-            previousAttackInput = attackInput; 
+            previousAttackInput = attackInput;
         }
 
         if (!attackInput && previousAttackInput)

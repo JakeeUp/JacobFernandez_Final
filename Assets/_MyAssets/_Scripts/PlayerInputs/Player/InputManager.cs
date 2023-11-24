@@ -95,7 +95,7 @@ public class InputManager : MonoBehaviour
 
     private void HandleSprintingInput(bool trySprint)
     {
-        if (b_Input && stats.CurrentMana > 20)
+        if (b_Input )
         {
             playerLocomotion.isSprinting = true;
         }

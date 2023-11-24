@@ -4,95 +4,49 @@ using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
+    public static PlayerStats instance;
 
-    PlayerLocomotion playerMovement;
+    private Animator animator;
 
-    private int currentHealth = 100;
-    private int maxHealth = 100;
-
-    private float currentMana = 100f;
-    private float maximumMana = 100f;
-
-    [SerializeField] private float healthRegenerationRate = 5f;
-    [SerializeField] private float manaRegenerationRate = 2f;
-    [SerializeField] private float manaDrainRateWhileSprinting = 5f;
-
-    public delegate void HealthChangedEvent(float currentValue);
-    public delegate void ManaChangedEvent(float currentValue);
-
-    public event HealthChangedEvent healthChanged;
-    public event ManaChangedEvent manaChanged;
+    [SerializeField]int currentHealth , maxHealth = 5;
 
     private void Awake()
     {
-        playerMovement = GetComponent<PlayerLocomotion>();
-        StartCoroutine(RecoverResources());
+        instance = this;
+        animator = GetComponent<Animator>();
+        currentHealth = maxHealth;
     }
 
-    private IEnumerator RecoverResources()
+    private void Start()
     {
-        while (true)
+    }
+    public delegate void HurtPlayer();
+    public event HurtPlayer DamagePlayer;
+
+    public void HurtingPlayer()
+    {
+        Hurt();
+        DamagePlayer?.Invoke();
+    }
+    private void Hurt()
+    {
+        currentHealth--;
+        RespawnResetParams();
+        
+
+    }
+
+    private void RespawnResetParams()
+    {
+        if (currentHealth <= 0)
         {
-            Debug.Log("RecoverResources loop running");
-            RegenerateHealth();
-            HandleMana();
-            yield return null;
+            currentHealth = 0;
+            GameManager.instance.Respawn();
+            currentHealth = maxHealth;
+            animator.SetFloat("Horizontal", 0f);
+            animator.SetFloat("Vertical", 0f);
         }
     }
 
-    private void RegenerateHealth()
-    {
-        if (currentHealth < maxHealth)
-        {
-            currentHealth = Mathf.Min(maxHealth, currentHealth + Mathf.FloorToInt(Time.deltaTime * healthRegenerationRate));
-            UpdateHealthUI();
-        }
-    }
-    private float manaDrainAccumulator = 0f;
-    private void HandleMana()
-    {
-        if (playerMovement != null && playerMovement.isSprinting)
-        {
-            ConsumeMana(Time.deltaTime * manaDrainRateWhileSprinting);
-        }
-        else if (currentMana < maximumMana)
-        {
-            currentMana = Mathf.Min(maximumMana, currentMana + Time.deltaTime * manaRegenerationRate);
-            UpdateManaUI();
-        }
-    }
 
-    public void AddDamage(int amount)
-    {
-        currentHealth = Mathf.Clamp(currentHealth - amount, 0, maxHealth);
-        UpdateHealthUI();
-    }
-
-    public void ConsumeMana(float amount)
-    {
-        currentMana = Mathf.Clamp(currentMana - amount, 0f, maximumMana);
-        UpdateManaUI();
-    }
-
-    private void UpdateHealthUI()
-    {
-        float percent = (float)currentHealth / maxHealth;
-        healthChanged?.Invoke(percent);
-    }
-
-    private void UpdateManaUI()
-    {
-        float percent = currentMana / maximumMana;
-        manaChanged?.Invoke(percent);
-    }
-
-    public bool HasEnoughMana(int requiredValue)
-    {
-        return currentMana >= requiredValue;
-    }
-
-    public float CurrentMana
-    {
-        get { return currentMana; }
-    }
 }

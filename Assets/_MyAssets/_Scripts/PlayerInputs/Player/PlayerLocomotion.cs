@@ -96,7 +96,7 @@ public class PlayerLocomotion : MonoBehaviour
     }
     public void UpdateSprinting(bool trySprint)
     {
-        if (trySprint && stats.CurrentMana > 20)
+        if (trySprint  )
         {
             // Sprinting logic here
             isSprinting = true;

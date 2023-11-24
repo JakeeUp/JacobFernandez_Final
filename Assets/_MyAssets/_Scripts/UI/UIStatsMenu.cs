@@ -11,7 +11,6 @@ public class UIStatsMenu : MonoBehaviour
     void Start()
     {
         PlayerStats playerStats = FindObjectOfType<PlayerStats>();
-        playerStats.healthChanged += healthBar.ChangeValue;
-        playerStats.manaChanged += manaBar.ChangeValue;
+        
     }
 }

@@ -9,7 +9,9 @@ public class PlayerLocomotion : MonoBehaviour
     {
         Grounded,
         Jumping,
-        Falling
+        Falling,
+        Swimming,
+        Skating
     }
 
     public PlayerState currentState;
@@ -37,7 +39,8 @@ public class PlayerLocomotion : MonoBehaviour
     public float maxDistance = 1;
 
     [Header("Movement Flags")]
-    [SerializeField] private bool _isSprinting; 
+    [SerializeField] private bool _isSprinting;
+    public bool isWalking = false;
 
 
     [Header("Movement Speeds")]
@@ -53,8 +56,10 @@ public class PlayerLocomotion : MonoBehaviour
     [SerializeField] private float airControl = 2f;
     [SerializeField] private float airRotationSpeed = 5f;
 
-    
 
+    [SerializeField] private Transform currentPlatform;
+    private Vector3 platformVelocityLastFrame;
+    private Vector3 platformVelocity;
     private void Awake()
     {
         stats = GetComponent<PlayerStats>();
@@ -67,9 +72,12 @@ public class PlayerLocomotion : MonoBehaviour
         cameraObject = Camera.main.transform;
         animator = GetComponent<Animator>();
     }
+    private Vector3 platformPositionLastFrame;
 
+    
     private void Update()
     {
+        CheckForSwimming();
         switch (currentState)
         {
             case PlayerState.Grounded:
@@ -80,6 +88,12 @@ public class PlayerLocomotion : MonoBehaviour
                 break;
             case PlayerState.Falling:
                 HandleFalling();
+                break;
+            case PlayerState.Swimming:
+                HandleSwimming();
+                break;
+            case PlayerState.Skating:
+                HandleSkating();
                 break;
         }
 
@@ -94,43 +108,114 @@ public class PlayerLocomotion : MonoBehaviour
             }
         }
     }
+    public bool isInWater = false;
+    private void CheckForSwimming()
+    {
+        if (isInWater)
+        {
+            if (currentState != PlayerState.Swimming)
+            {
+                TransitionToSwimming();
+            }
+        }
+        else if (currentState == PlayerState.Swimming)
+        {
+            ExitSwimming();
+        }
+    }
+
+    private void HandleSkating()
+    {
+        throw new NotImplementedException();
+    }
+
+    //swimming
+    private void HandleSwimming()
+    {
+        Debug.Log("handle swimming");
+        float buoyancyForce = 2f; 
+        rb.AddForce(Vector3.up * buoyancyForce, ForceMode.Acceleration);
+
+        float swimSpeed = 3f; 
+        Vector3 swimDirection = transform.forward * inputManager.VerticalInput;
+        rb.AddForce(swimDirection * swimSpeed, ForceMode.VelocityChange);
+
+       
+        float turnSpeed = 2f; 
+        transform.Rotate(Vector3.up, inputManager.HorizontalInput * turnSpeed);
+    }
+
+    public void TransitionToSwimming()
+    {
+        Debug.Log("Transitioning to Swimming State");
+        currentState = PlayerState.Swimming;
+        playerJump.isGrounded = false;
+        // Set animator parameters for swimming
+        animator.SetBool("IsSwimming", true);
+    }
+
+    public void ExitSwimming()
+    {
+        Debug.Log("Exiting Swimming State");
+        currentState = PlayerState.Grounded; 
+                                            
+        animator.SetBool("IsSwimming", false);
+        playerJump.CanPlayerJump();
+    }
+
+   
+
+
+    //swimming
+
     public void UpdateSprinting(bool trySprint)
     {
-        if (trySprint  )
+        if (trySprint)
         {
-            // Sprinting logic here
             isSprinting = true;
         }
         else
         {
-            // Stop sprinting
             isSprinting = false;
         }
     }
     private void FixedUpdate()
     {
+        if (!rb.isKinematic)
+        {
+            ApplyAirControl();
+        }
         HandleFalling();
+        HandleMovement();
 
         if (currentState == PlayerState.Falling || currentState == PlayerState.Jumping)
         {
             ApplyAirControl();
         }
+        if (currentPlatform != null)
+        {
+            Vector3 newPlatformPosition = currentPlatform.position;
+            platformVelocity = (newPlatformPosition - platformPositionLastFrame) / Time.deltaTime;
+
+            rb.MovePosition(rb.position + platformVelocity * Time.deltaTime);
+
+            platformPositionLastFrame = newPlatformPosition;
+        }
+
+
     }
 
     private void HandleFalling()
     {
         if (!playerJump.isGrounded)
         {
-            // If the player is falling and not yet grounded, increase the falling velocity
             _fallingVelocity += Physics.gravity.y * fallingVelocity * Time.deltaTime;
         }
         else
         {
-            // If the player is grounded, reset the falling velocity
             _fallingVelocity = 0;
         }
 
-        // Apply the falling velocity to the player's Rigidbody
         if (currentState == PlayerState.Falling)
         {
             Vector3 downwardVelocity = new Vector3(0, _fallingVelocity, 0);
@@ -184,8 +269,8 @@ public class PlayerLocomotion : MonoBehaviour
     private void HandleGroundedEntry()
     {
         playerJump.ResetJump();
-        playerJump.CurrentJumpCount = 0; // Reset the jump count when grounded
-        _fallingVelocity = 0; // Reset falling velocity when grounded
+        playerJump.CurrentJumpCount = 0; 
+        _fallingVelocity = 0; 
 
         animatorManager.animator.SetBool("isJumping", false);
         animatorManager.PlayTargetAnimation("standing-jump-end", true);
@@ -204,6 +289,7 @@ public class PlayerLocomotion : MonoBehaviour
 
     private void ApplyAirControl()
     {
+        if (rb.isKinematic) return;
         Vector3 airMovement = cameraObject.TransformDirection(new Vector3(inputManager.HorizontalInput, 0, inputManager.VerticalInput));
 
         float currentAirControlMultiplier = airControlMultiplier;
@@ -213,7 +299,7 @@ public class PlayerLocomotion : MonoBehaviour
             //currentAirControlMultiplier *= 0.5f; // Reduce the air control by half, for example
 
             // Option 2: Increased gravity (if your character's Rigidbody uses gravity)
-           rb.AddForce(Physics.gravity * Time.fixedDeltaTime);
+           rb.AddForce(Physics.gravity * Time.deltaTime);
 
             // Option 3: Apply drag (reducing horizontal velocity over time)
             //rb.velocity = new Vector3(rb.velocity.x * 0.95f, rb.velocity.y, rb.velocity.z * 0.95f); // Apply drag
@@ -229,7 +315,6 @@ public class PlayerLocomotion : MonoBehaviour
     }
     private void HandleMovement()
     {
-
         moveDirection = cameraObject.forward * inputManager.VerticalInput;
         moveDirection += cameraObject.right * inputManager.HorizontalInput;
         moveDirection.Normalize();
@@ -238,25 +323,60 @@ public class PlayerLocomotion : MonoBehaviour
         float targetSpeed = isSprinting ? sprintingSpeed : inputManager.moveAmount >= 0.5f ? runningSpeed : walkingSpeed;
         moveDirection *= targetSpeed;
 
-        if (playerJump.isGrounded)
+        if (rb.isKinematic)
         {
-            Vector3 movementVelocity = moveDirection;
-            rb.velocity = new Vector3(movementVelocity.x, rb.velocity.y, movementVelocity.z);
+           
+            transform.Translate(moveDirection * Time.fixedDeltaTime, Space.World);
         }
-        else 
+        else
         {
-            Vector3 airMovement = new Vector3(moveDirection.x * airControlMultiplier, rb.velocity.y, moveDirection.z * airControlMultiplier);
-            rb.velocity = Vector3.Lerp(rb.velocity, airMovement, airControl * Time.fixedDeltaTime);
+            
+            if (playerJump.isGrounded)
+            {
+                Vector3 movementVelocity = moveDirection;
+                rb.velocity = new Vector3(movementVelocity.x, rb.velocity.y, movementVelocity.z);
+            }
+            else
+            {
+                Vector3 airMovement = new Vector3(moveDirection.x * airControlMultiplier, rb.velocity.y, moveDirection.z * airControlMultiplier);
+                rb.velocity = Vector3.Lerp(rb.velocity, airMovement, airControl * Time.fixedDeltaTime);
+            }
         }
     }
 
    
 
-    #region Jump Functions
    
-   
-   
-    #endregion
+    public void SetCurrentPlatform(Transform platform)
+    {
+        currentPlatform = platform;
+        if (currentPlatform != null)
+        {
+            Debug.Log("Current platform set to: " + currentPlatform.name);
+        }
+        else
+        {
+            Debug.Log("Current platform set to null.");
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("MovingPlatform"))
+        {
+            this.transform.SetParent(collision.transform);
+            rb.isKinematic = true; 
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("MovingPlatform"))
+        {
+            this.transform.SetParent(null);
+            rb.isKinematic = false; 
+        }
+    }
     private void HandleRotation()
     {
         Vector3 targetDir = cameraObject.forward * inputManager.VerticalInput;

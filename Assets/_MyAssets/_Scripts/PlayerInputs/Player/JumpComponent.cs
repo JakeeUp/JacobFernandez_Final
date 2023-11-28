@@ -54,6 +54,15 @@ public class JumpComponent : MonoBehaviour
     {
         HandleJumpingEntry();
         OnJumpingEntry?.Invoke();
+
+        if (rb.isKinematic)
+        {
+            StartCoroutine(ManualJump());
+        }
+        else
+        {
+            Jump();
+        }
     }
     private void HandleJumpingEntry()
     {
@@ -88,13 +97,13 @@ public class JumpComponent : MonoBehaviour
             if (isGrounded || (player.currentState == PlayerLocomotion.PlayerState.Falling && currentJumpCount < maxJumpCount))
             {
                 StartJump();
-                lastJumpTime = Time.time; // Reset the last jump time
-                jumpButtonReleased = false; // Prevent further jumps until the button is released
+                lastJumpTime = Time.time; 
+                jumpButtonReleased = false; 
             }
         }
         else if (!inputManager.jump_Input)
         {
-            jumpButtonReleased = true; // Allow the jump button to be pressed again
+            jumpButtonReleased = true; 
         }
 
         if (!inputManager.jump_Input && player.currentState == PlayerLocomotion.PlayerState.Jumping)
@@ -181,5 +190,37 @@ public class JumpComponent : MonoBehaviour
             player.TransitionToState(PlayerLocomotion.PlayerState.Jumping);
         }
     }
+    public float jumpForce = 5f;
 
+    private IEnumerator ExecuteKinematicJump()
+    {
+        float jumpDuration = 1f; 
+        float timer = 0;
+        Vector3 startPosition = transform.position;
+        Vector3 endPosition = startPosition + Vector3.up * jumpForce; 
+
+        while (timer < jumpDuration)
+        {
+            timer += Time.deltaTime;
+            float height = Mathf.Sin(Mathf.PI * (timer / jumpDuration)); 
+            transform.position = Vector3.Lerp(startPosition, endPosition, height);
+            yield return null;
+        }
+    }
+
+    private IEnumerator ManualJump()
+    {
+        float jumpDuration = 1f; 
+        float timer = 0;
+        Vector3 startPosition = transform.position;
+        Vector3 peakPosition = startPosition + Vector3.up * jumpForce; 
+
+        while (timer < jumpDuration)
+        {
+            timer += Time.deltaTime;
+            float height = Mathf.Sin(Mathf.PI * (timer / jumpDuration)); 
+            transform.position = Vector3.Lerp(startPosition, peakPosition, height);
+            yield return null;
+        }
+    }
 }

@@ -2,11 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
 {
+    public static InputManager instance;
     public InputBuffer inputBuffer = new InputBuffer();
-    PlayerControls playerControls;
+    public PlayerControls playerControls;
+    public PlayerInput playerInput;
     PlayerLocomotion playerLocomotion;
     JumpComponent jump;
     PlayerStats stats;
@@ -32,6 +35,10 @@ public class InputManager : MonoBehaviour
 
     private void Awake()
     {
+
+        if (instance == null)
+            instance = this;
+        playerInput = GetComponent<PlayerInput>();
         stats = GetComponent<PlayerStats>();
         animatorManager = GetComponent<AnimatorManager>();
         playerLocomotion = GetComponent<PlayerLocomotion>();

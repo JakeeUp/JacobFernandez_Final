@@ -1,0 +1,34 @@
+Thank you for buying and downloading this package. The use is very simple.
+
+- The prefabs can be found in the folder "_Prefabs". 
+- All objects have different numbers of simple materials. You can give it your custom color and glowing by simply changing the material color or the HDR color!
+- The materials can be found in the folder "_Material".
+- The meshes in .fbx format are in the "Meshes" folder.
+- In the folder "_Postprocessing" you will find a postprocessing profile "Profile". To use this profile you first need the Unity Assets "Post Processing" in your project. Then you should add the component "Post-process Layer" to your camera.
+- In the folder "Terrain" are 3 different terrain layers which fit perfectly for this package.
+
+_____________________________________________________________________________________________________
+
+Would you like to have more matching objects for this package? Then check out my Unity Asset store: 
+
+https://assetstore.unity.com/publishers/55249
+
+or take a look at my itch.io site:
+
+https://fantasyhavenassets.itch.io/
+
+_____________________________________________________________________________________________________
+
+If you have any suggestions, tips or problems or if you would like to give your game a custom look, contact me or place an order on:
+
+https://www.fantasyhavenassets.com/
+
+or write me an e-mail directly:
+
+ronja@fantasyhavenassets.com
+
+
+I wish you a lot of fun and pleasure with my package!
+
+Best regards,
+Fantasy Haven Assets!

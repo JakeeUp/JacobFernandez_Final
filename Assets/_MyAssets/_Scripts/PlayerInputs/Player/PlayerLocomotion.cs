@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class PlayerLocomotion : MonoBehaviour
 {
+    #region PlayerState
     public enum PlayerState
     {
         Grounded,
@@ -13,7 +14,9 @@ public class PlayerLocomotion : MonoBehaviour
         Swimming,
         Skating
     }
+    #endregion
 
+    #region calls
     public PlayerState currentState;
 
     PlayerManager playerManager;
@@ -30,7 +33,11 @@ public class PlayerLocomotion : MonoBehaviour
     Rigidbody rb;
     private float lastAttackTime;
     public float attackCooldown = 0.5f;
-    [Header("Falliong")]
+    #endregion
+
+
+    #region variables 
+    [Header("Falling")]
     [SerializeField] private float _inAirTimer;
     [SerializeField] private float _leapingVelocity;
     [SerializeField] private float _fallingVelocity;
@@ -56,10 +63,19 @@ public class PlayerLocomotion : MonoBehaviour
     [SerializeField] private float airControl = 2f;
     [SerializeField] private float airRotationSpeed = 5f;
 
+    [Header("Swimming Speeds")]
+    [SerializeField] float buoyancyForce = 2f;
+    [SerializeField] float swimSpeed = 3f;
+    [SerializeField] float turnSpeed = 2f;
 
+    [Header("Platform")]
     [SerializeField] private Transform currentPlatform;
+
+
     private Vector3 platformVelocityLastFrame;
     private Vector3 platformVelocity;
+    #endregion
+
     private void Awake()
     {
         stats = GetComponent<PlayerStats>();
@@ -78,6 +94,27 @@ public class PlayerLocomotion : MonoBehaviour
     private void Update()
     {
         CheckForSwimming();
+        HandleCurrentState();
+
+        HandleFallingAndLanding();
+        HandleGrounded(playerJump);
+        HandleInputBuffer();
+    }
+
+    private void HandleInputBuffer()
+    {
+        if (Time.time >= lastAttackTime + attackCooldown)
+        {
+            if (inputManager.CheckForBufferedInput("Attack"))
+            {
+                HandleAttack();
+                lastAttackTime = Time.time;
+            }
+        }
+    }
+
+    private void HandleCurrentState()
+    {
         switch (currentState)
         {
             case PlayerState.Grounded:
@@ -96,18 +133,8 @@ public class PlayerLocomotion : MonoBehaviour
                 HandleSkating();
                 break;
         }
-
-        HandleFallingAndLanding();
-        HandleGrounded(playerJump);
-        if (Time.time >= lastAttackTime + attackCooldown)
-        {
-            if (inputManager.CheckForBufferedInput("Attack"))
-            {
-                HandleAttack();
-                lastAttackTime = Time.time; 
-            }
-        }
     }
+
     public bool isInWater = false;
     private void CheckForSwimming()
     {
@@ -130,18 +157,16 @@ public class PlayerLocomotion : MonoBehaviour
     }
 
     //swimming
+   
     private void HandleSwimming()
     {
         Debug.Log("handle swimming");
-        float buoyancyForce = 2f; 
         rb.AddForce(Vector3.up * buoyancyForce, ForceMode.Acceleration);
 
-        float swimSpeed = 3f; 
         Vector3 swimDirection = transform.forward * inputManager.VerticalInput;
         rb.AddForce(swimDirection * swimSpeed, ForceMode.VelocityChange);
 
        
-        float turnSpeed = 2f; 
         transform.Rotate(Vector3.up, inputManager.HorizontalInput * turnSpeed);
     }
 
@@ -150,7 +175,6 @@ public class PlayerLocomotion : MonoBehaviour
         Debug.Log("Transitioning to Swimming State");
         currentState = PlayerState.Swimming;
         playerJump.isGrounded = false;
-        // Set animator parameters for swimming
         animator.SetBool("IsSwimming", true);
     }
 
@@ -295,14 +319,7 @@ public class PlayerLocomotion : MonoBehaviour
         float currentAirControlMultiplier = airControlMultiplier;
         if (!inputManager.jump_Input)
         {
-            // Option 1: Reduced air control
-            //currentAirControlMultiplier *= 0.5f; // Reduce the air control by half, for example
-
-            // Option 2: Increased gravity (if your character's Rigidbody uses gravity)
            rb.AddForce(Physics.gravity * Time.deltaTime);
-
-            // Option 3: Apply drag (reducing horizontal velocity over time)
-            //rb.velocity = new Vector3(rb.velocity.x * 0.95f, rb.velocity.y, rb.velocity.z * 0.95f); // Apply drag
         }
 
         airMovement *= currentAirControlMultiplier;
@@ -391,7 +408,7 @@ public class PlayerLocomotion : MonoBehaviour
 
             float usedRotationSpeed = playerJump.isGrounded ? rotationSpeed : airRotationSpeed;
 
-            Debug.Log($"Rotating with speed: {usedRotationSpeed} - IsGrounded: {playerJump.isGrounded}");
+            //Debug.Log($"Rotating with speed: {usedRotationSpeed} - IsGrounded: {playerJump.isGrounded}");
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, usedRotationSpeed * Time.deltaTime);
         }

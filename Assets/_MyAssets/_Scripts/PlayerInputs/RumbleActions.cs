@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class RumbleActions : MonoBehaviour
 {
-    public PlayerLocomotion playerLocomotion; // Reference to the locomotion script
-    public Transform leftFootTransform; // Assign this to the player's feet position in the inspector
-    public Transform rightFootTransform; // Assign this to the player's feet position in the inspector
-    public LayerMask groundLayer; // Set this in the inspector to the layer that the ground is on
+    public PlayerLocomotion playerLocomotion; 
+    public Transform leftFootTransform; 
+    public Transform rightFootTransform; 
+    public LayerMask groundLayer; 
+    public LayerMask metalLayer; 
+    public LayerMask waterLayer; 
     public float timeSinceLastLeftStep = 0f;
     public float timeSinceLastRightStep = 0f;
     public float leftStepInterval = 0.5f;
@@ -25,9 +27,7 @@ public class RumbleActions : MonoBehaviour
         {
             HandleLeftFootRumble();
             HandleRightFootRumble();
-            Debug.Log("run rumble called");
         }
-        Debug.Log("run rumble called");
     }
 
     private bool isLeftFoot = true;
@@ -41,8 +41,17 @@ public class RumbleActions : MonoBehaviour
 
             if (Physics.Raycast(leftFootTransform.position, Vector3.down, 0.3f, groundLayer))
             {
-                Debug.Log("left foot run rumble");
-                RumbleManager.instance.RumblePulse(0.35f, 0.35f, 0.1f);
+                RumbleManager.instance.RumblePulse(0.5f, 0.5f, 0.1f);
+            }
+
+            if (Physics.Raycast(leftFootTransform.position, Vector3.down, 0.3f, metalLayer))
+            {
+                RumbleManager.instance.RumblePulse(0.01f, 0.01f, 0.1f);
+            }
+
+            if (Physics.Raycast(leftFootTransform.position, Vector3.down, 0.3f, waterLayer))
+            {
+                RumbleManager.instance.RumblePulse(1f, 1f, 0.1f);
             }
         }
     }
@@ -55,8 +64,16 @@ public class RumbleActions : MonoBehaviour
 
             if (Physics.Raycast(rightFootTransform.position, Vector3.down, 0.3f, groundLayer))
             {
-                Debug.Log("right foot run rumble");
-                RumbleManager.instance.RumblePulse(0.35f, 0.35f, 0.1f);
+                RumbleManager.instance.RumblePulse(0.5f, 0.5f, 0.1f);
+            }
+
+            if (Physics.Raycast(rightFootTransform.position, Vector3.down, 0.3f, metalLayer))
+            {
+                RumbleManager.instance.RumblePulse(0.01f, 0.01f, 0.1f);
+            }
+            if (Physics.Raycast(rightFootTransform.position, Vector3.down, 0.3f, waterLayer))
+            {
+                RumbleManager.instance.RumblePulse(1f, 1f, 0.1f);
             }
         }
     }
@@ -65,8 +82,12 @@ public class RumbleActions : MonoBehaviour
     {
         if (InputManager.instance.playerControls.PlayerActions.Jump.WasPerformedThisFrame())
         {
-            Debug.Log("jump rumble");
             RumbleManager.instance.RumblePulse(0.50f, 1f, .1f);
         }
+    }
+
+    private void HandleAttackRumble()
+    {
+
     }
 }

@@ -26,9 +26,10 @@ public class PlayerLocomotion : MonoBehaviour
     InputManager inputManager;
     CameraManager cam;
     JumpComponent playerJump;
+    KnockBackComponent knockBack;
     PlayerStats stats;
 
-    Vector3 moveDirection;
+    public Vector3 moveDirection;
     Transform cameraObject;
     Rigidbody rb;
     private float lastAttackTime;
@@ -78,6 +79,7 @@ public class PlayerLocomotion : MonoBehaviour
 
     private void Awake()
     {
+        knockBack = GetComponent<KnockBackComponent>();
         stats = GetComponent<PlayerStats>();
         playerManager = GetComponent<PlayerManager>();
         animatorManager = GetComponent<AnimatorManager>();
@@ -99,6 +101,8 @@ public class PlayerLocomotion : MonoBehaviour
         HandleFallingAndLanding();
         HandleGrounded(playerJump);
         HandleInputBuffer();
+
+       
     }
 
     private void HandleInputBuffer()
@@ -332,31 +336,49 @@ public class PlayerLocomotion : MonoBehaviour
     }
     private void HandleMovement()
     {
-        moveDirection = cameraObject.forward * inputManager.VerticalInput;
-        moveDirection += cameraObject.right * inputManager.HorizontalInput;
-        moveDirection.Normalize();
-        moveDirection.y = 0;
-
-        float targetSpeed = isSprinting ? sprintingSpeed : inputManager.moveAmount >= 0.5f ? runningSpeed : walkingSpeed;
-        moveDirection *= targetSpeed;
-
-        if (rb.isKinematic)
+        if (!knockBack.isKnocking)
         {
-           
-            transform.Translate(moveDirection * Time.fixedDeltaTime, Space.World);
-        }
-        else
-        {
-            
-            if (playerJump.isGrounded)
+            moveDirection = cameraObject.forward * inputManager.VerticalInput;
+            moveDirection += cameraObject.right * inputManager.HorizontalInput;
+            moveDirection.Normalize();
+            moveDirection.y = 0;
+
+            float targetSpeed = isSprinting ? sprintingSpeed : inputManager.moveAmount >= 0.5f ? runningSpeed : walkingSpeed;
+            moveDirection *= targetSpeed;
+
+            if (rb.isKinematic)
             {
-                Vector3 movementVelocity = moveDirection;
-                rb.velocity = new Vector3(movementVelocity.x, rb.velocity.y, movementVelocity.z);
+
+                transform.Translate(moveDirection * Time.fixedDeltaTime, Space.World);
             }
             else
             {
-                Vector3 airMovement = new Vector3(moveDirection.x * airControlMultiplier, rb.velocity.y, moveDirection.z * airControlMultiplier);
-                rb.velocity = Vector3.Lerp(rb.velocity, airMovement, airControl * Time.fixedDeltaTime);
+
+                if (playerJump.isGrounded)
+                {
+                    Vector3 movementVelocity = moveDirection;
+                    rb.velocity = new Vector3(movementVelocity.x, rb.velocity.y, movementVelocity.z);
+                }
+                else
+                {
+                    Vector3 airMovement = new Vector3(moveDirection.x * airControlMultiplier, rb.velocity.y, moveDirection.z * airControlMultiplier);
+                    rb.velocity = Vector3.Lerp(rb.velocity, airMovement, airControl * Time.fixedDeltaTime);
+                }
+            }
+        }
+
+        if(knockBack.isKnocking)
+        {
+            knockBack.knockbackCounter -= Time.deltaTime;
+
+            moveDirection = -transform.forward * knockBack.knockbackPower.x;
+            moveDirection.y = 0;
+            rb.MovePosition(rb.position + moveDirection * Time.deltaTime);
+
+
+            if (knockBack.knockbackCounter <=0)
+            {
+                knockBack.isKnocking = false;
             }
         }
     }
@@ -433,6 +455,7 @@ public class PlayerLocomotion : MonoBehaviour
     void OnDrawGizmos()
     {
         if (!UnityEditor.Selection.Contains(gameObject)) return;
+
 
         Vector3 rayCastOrigin = transform.position + Vector3.up * rayCastHeightOffset;
         Vector3 rayCastDirection = Vector3.down * maxDistance;

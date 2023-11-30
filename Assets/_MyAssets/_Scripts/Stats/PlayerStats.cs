@@ -8,6 +8,8 @@ public class PlayerStats : MonoBehaviour
 
     private Animator animator;
 
+    RumbleActions rumbleActions;
+
 
     [SerializeField]int currentHealth , maxHealth = 5;
 
@@ -19,7 +21,8 @@ public class PlayerStats : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        animator = GetComponent<Animator>();
+        animator = GetComponent<Animator>(); //get component is not bad if its in awake.
+        rumbleActions = GetComponent<RumbleActions>();
         currentHealth = maxHealth;
     }
 
@@ -31,7 +34,7 @@ public class PlayerStats : MonoBehaviour
 
     private void Update()
     {
-        PlayerDamageFlashing();
+        PlayerDamageFlashing(); //make this corutine call when taking damage// <<- faster and cleaner 
     }
 
     private void PlayerDamageFlashing()
@@ -70,7 +73,7 @@ public class PlayerStats : MonoBehaviour
             currentHealth--;
             RespawnResetParams();
 
-            KnockBackComponent.instance.Knockback();
+            KnockBackComponent.instance.Knockback(); //make not a singleton, only 1 exist need for enemies 
             
         }
         
@@ -87,6 +90,7 @@ public class PlayerStats : MonoBehaviour
             KnockBackComponent.instance.knockbackCounter = 0;
             currentHealth = 0;
             GameManager.instance.Respawn();
+            RumbleManager.instance.pad.SetMotorSpeeds(0, 0);
             currentHealth = maxHealth;
             animator.SetFloat("Horizontal", 0f);
             animator.SetFloat("Vertical", 0f);
@@ -111,4 +115,6 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
+
+    //ui health add here//
 }

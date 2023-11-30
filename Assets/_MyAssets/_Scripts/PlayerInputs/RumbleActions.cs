@@ -1,23 +1,47 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class RumbleActions : MonoBehaviour
 {
-    public PlayerLocomotion playerLocomotion; 
-    public Transform leftFootTransform; 
-    public Transform rightFootTransform; 
-    public LayerMask groundLayer; 
-    public LayerMask metalLayer; 
-    public LayerMask waterLayer; 
-    public float timeSinceLastLeftStep = 0f;
-    public float timeSinceLastRightStep = 0f;
-    public float leftStepInterval = 0.5f;
-    public float rightStepInterval = 0.5f;
+     PlayerLocomotion playerLocomotion; 
+     [SerializeField]Transform leftFootTransform; 
+     [SerializeField]Transform rightFootTransform; 
+     LayerMask groundLayer; 
+     LayerMask metalLayer; 
+     LayerMask waterLayer; 
+     [SerializeField]float timeSinceLastLeftStep = 0f;
+     [SerializeField] float timeSinceLastRightStep = 0f;
+     [SerializeField] float leftStepInterval = 0.1f;
+     [SerializeField] float rightStepInterval = 0.1f;
+
+    public struct RumbleSettings
+    {
+        public float lowfrequency;
+        public float highfrequency;
+        public float duration;
+        public RumbleSettings(float lowfrequency, float highfrequency, float duration)
+        {
+            this.lowfrequency = lowfrequency;
+            this.highfrequency = highfrequency;
+            this.duration = duration;
+        }
+    }
+
+
+    private Dictionary<LayerMask, RumbleSettings> rumbleSettingsDict;
 
     private void Awake()
     {
         playerLocomotion = GetComponent<PlayerLocomotion>();
+
+        rumbleSettingsDict = new Dictionary<LayerMask, RumbleSettings>
+        {
+            {LayerMask.NameToLayer("Ground"), new RumbleSettings(0.5f, 0.5f, 0.1f) },
+            {LayerMask.NameToLayer("WaterTest"), new RumbleSettings(0.01f, 0.01f, 0.1f) },
+            { LayerMask.NameToLayer("Metal"), new RumbleSettings(1f, 1f, 0.1f)}
+        };
     }
     private void Update()
     {
@@ -30,52 +54,41 @@ public class RumbleActions : MonoBehaviour
         }
     }
 
-    private bool isLeftFoot = true;
-
-    private void HandleLeftFootRumble()
+    private void HandleFootRumble(Transform footTransform, ref float timeSinceLastStep, float stepInterval)
     {
         timeSinceLastLeftStep += Time.deltaTime;
-        if (timeSinceLastLeftStep >= leftStepInterval)
+
+        if(timeSinceLastLeftStep >= stepInterval)
         {
-            timeSinceLastLeftStep = 0f;
+            timeSinceLastStep = 0f;
 
-            if (Physics.Raycast(leftFootTransform.position, Vector3.down, 0.3f, groundLayer))
-            {
-                RumbleManager.instance.RumblePulse(0.5f, 0.5f, 0.1f);
-            }
+            RaycastHit hit;
 
-            if (Physics.Raycast(leftFootTransform.position, Vector3.down, 0.3f, metalLayer))
+            if (Physics.Raycast(footTransform.position,Vector3.down,out hit,0.2f)) 
             {
-                RumbleManager.instance.RumblePulse(0.01f, 0.01f, 0.1f);
-            }
+                int hitLayer = hit.collider.gameObject.layer;
+                if(rumbleSettingsDict.ContainsKey(hitLayer))
+                {
+                    RumbleSettings settings = rumbleSettingsDict[hitLayer];
 
-            if (Physics.Raycast(leftFootTransform.position, Vector3.down, 0.3f, waterLayer))
-            {
-                RumbleManager.instance.RumblePulse(1f, 1f, 0.1f);
+                    RumbleManager.instance.RumblePulse(settings.lowfrequency,settings.highfrequency, settings.duration);
+                }
             }
+            
         }
+    }
+    private void HandleLeftFootRumble()
+    {
+        HandleFootRumble(leftFootTransform, ref timeSinceLastLeftStep, leftStepInterval);
+
+       
     }
     private void HandleRightFootRumble()
     {
-        timeSinceLastRightStep += Time.deltaTime;
-        if (timeSinceLastRightStep >= rightStepInterval)
-        {
-            timeSinceLastRightStep = 0f;
 
-            if (Physics.Raycast(rightFootTransform.position, Vector3.down, 0.3f, groundLayer))
-            {
-                RumbleManager.instance.RumblePulse(0.5f, 0.5f, 0.1f);
-            }
+        HandleFootRumble(rightFootTransform, ref timeSinceLastRightStep, rightStepInterval);
 
-            if (Physics.Raycast(rightFootTransform.position, Vector3.down, 0.3f, metalLayer))
-            {
-                RumbleManager.instance.RumblePulse(0.01f, 0.01f, 0.1f);
-            }
-            if (Physics.Raycast(rightFootTransform.position, Vector3.down, 0.3f, waterLayer))
-            {
-                RumbleManager.instance.RumblePulse(1f, 1f, 0.1f);
-            }
-        }
+    
     }
 
     private static void HandleJumpRumble()

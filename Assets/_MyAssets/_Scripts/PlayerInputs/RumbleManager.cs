@@ -11,7 +11,7 @@ public class RumbleManager : MonoBehaviour
     InputManager input;
     PlayerLocomotion playerLocomotion;
 
-    private Gamepad pad;
+    public Gamepad pad;
 
     private Coroutine stopRumbleAfterTimeCoroutine;
 

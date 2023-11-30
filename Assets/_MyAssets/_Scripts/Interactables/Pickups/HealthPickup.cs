@@ -14,6 +14,7 @@ public class HealthPickup : MonoBehaviour
         if (other.tag == "Player")
         {
             GameObject effect = Instantiate(healthPickupEffect, PlayerManager.instance.transform.position + new Vector3(0f, 0f, 0f), Quaternion.identity);
+            
             effect.transform.SetParent(PlayerManager.instance.transform, true);
 
             Destroy(gameObject);
@@ -26,6 +27,7 @@ public class HealthPickup : MonoBehaviour
             {
                 PlayerStats.instance.AddHealth(healAmount);
             }
+
         }
     }
 

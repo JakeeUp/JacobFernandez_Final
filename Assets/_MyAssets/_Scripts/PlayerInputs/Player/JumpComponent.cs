@@ -23,6 +23,8 @@ public class JumpComponent : MonoBehaviour
     InputManager inputManager;
     PlayerLocomotion player;
 
+    public static JumpComponent instance;
+
     [SerializeField] private bool _isGrounded;
     [SerializeField] private bool _isJumping;
     public bool isGrounded { get { return _isGrounded; } set { _isGrounded = value; } }
@@ -32,6 +34,7 @@ public class JumpComponent : MonoBehaviour
 
     private void Awake()
     {
+        instance = this;
         player = GetComponent<PlayerLocomotion>();
         animatorManager = GetComponent<AnimatorManager>();
         inputManager = GetComponent<InputManager>();

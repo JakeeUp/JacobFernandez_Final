@@ -7,6 +7,7 @@ public class KnockBackComponent : MonoBehaviour
     public static KnockBackComponent instance;
     private Rigidbody rb;
     PlayerLocomotion playerLocomotion;
+    PlayerStats playerStats;
 
     [SerializeField] public bool isKnocking;
     [SerializeField] public float knockBackLength = 0.5f;
@@ -18,6 +19,7 @@ public class KnockBackComponent : MonoBehaviour
         instance = this;
         rb = GetComponent<Rigidbody>();
         playerLocomotion = GetComponent<PlayerLocomotion>();
+        playerStats = GetComponent<PlayerStats>();
     }
 
     public void Knockback()
@@ -43,10 +45,16 @@ public class KnockBackComponent : MonoBehaviour
             knockbackCounter -= Time.deltaTime;
             if (knockbackCounter <= 0)
             {
-                //isKnocking = false;
+                isKnocking = false;
 
                 playerLocomotion.moveDirection.y = 0; 
             }
         }
+        if(playerStats.Health <= 0)
+        {
+            knockbackCounter = 0;
+        }
+        
     }
+    
 }

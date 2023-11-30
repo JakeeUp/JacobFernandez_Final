@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-
+    public GameObject deathEffect;
     Vector3 respawnPos;
     private void Awake()
     {
@@ -31,7 +31,14 @@ public class GameManager : MonoBehaviour
         CameraController.instance.cineBrain.enabled = false;
 
         UIManager.instance.fadeToBlack = true;
+
+        Instantiate(deathEffect, PlayerManager.instance.transform.position + new Vector3 (0f,2f,0f), PlayerManager.instance.transform.rotation);
+
+        
         yield return new WaitForSeconds(2f);
+        KnockBackComponent.instance.knockbackCounter = 0;
+        KnockBackComponent.instance.isKnocking = false;
+
         UIManager.instance.fadeFromBlack = true; 
         PlayerManager.instance.transform.position = respawnPos;
         CameraController.instance.cineBrain.enabled = true;

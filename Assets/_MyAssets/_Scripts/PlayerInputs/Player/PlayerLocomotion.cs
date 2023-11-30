@@ -22,6 +22,15 @@ public class PlayerLocomotion : MonoBehaviour
     PlayerManager playerManager;
     AnimatorManager animatorManager;
     Animator animator;
+    private Animator _animator;
+
+    public Animator Animator
+    {
+        get { return _animator; }
+        internal set { _animator = value; }
+    }
+
+    WaterComponent playerWaterControls;
  
     InputManager inputManager;
     CameraManager cam;
@@ -29,13 +38,15 @@ public class PlayerLocomotion : MonoBehaviour
     KnockBackComponent knockBack;
     PlayerStats stats;
 
+
+    public static PlayerLocomotion instance;
+
     public Vector3 moveDirection;
     Transform cameraObject;
-    Rigidbody rb;
+    public Rigidbody rb;
     private float lastAttackTime;
     public float attackCooldown = 0.5f;
     #endregion
-
 
     #region variables 
     [Header("Falling")]
@@ -64,11 +75,6 @@ public class PlayerLocomotion : MonoBehaviour
     [SerializeField] private float airControl = 2f;
     [SerializeField] private float airRotationSpeed = 5f;
 
-    [Header("Swimming Speeds")]
-    [SerializeField] float buoyancyForce = 2f;
-    [SerializeField] float swimSpeed = 3f;
-    [SerializeField] float turnSpeed = 2f;
-
     [Header("Platform")]
     [SerializeField] private Transform currentPlatform;
 
@@ -79,6 +85,8 @@ public class PlayerLocomotion : MonoBehaviour
 
     private void Awake()
     {
+        instance = this;
+        playerWaterControls = GetComponent<WaterComponent>();
         knockBack = GetComponent<KnockBackComponent>();
         stats = GetComponent<PlayerStats>();
         playerManager = GetComponent<PlayerManager>();
@@ -164,31 +172,17 @@ public class PlayerLocomotion : MonoBehaviour
    
     private void HandleSwimming()
     {
-        Debug.Log("handle swimming");
-        rb.AddForce(Vector3.up * buoyancyForce, ForceMode.Acceleration);
-
-        Vector3 swimDirection = transform.forward * inputManager.VerticalInput;
-        rb.AddForce(swimDirection * swimSpeed, ForceMode.VelocityChange);
-
-       
-        transform.Rotate(Vector3.up, inputManager.HorizontalInput * turnSpeed);
+        playerWaterControls.onBuoyancy?.Invoke();
     }
 
     public void TransitionToSwimming()
     {
-        Debug.Log("Transitioning to Swimming State");
-        currentState = PlayerState.Swimming;
-        playerJump.isGrounded = false;
-        animator.SetBool("IsSwimming", true);
+        playerWaterControls.onTransitionToSwimming?.Invoke();
     }
 
     public void ExitSwimming()
     {
-        Debug.Log("Exiting Swimming State");
-        currentState = PlayerState.Grounded; 
-                                            
-        animator.SetBool("IsSwimming", false);
-        playerJump.CanPlayerJump();
+        playerWaterControls.onExitingSwimming?.Invoke();
     }
 
    
@@ -249,10 +243,6 @@ public class PlayerLocomotion : MonoBehaviour
             Vector3 downwardVelocity = new Vector3(0, _fallingVelocity, 0);
             rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y + downwardVelocity.y, rb.velocity.z);
         }
-        //if (playerJump.isGrounded && rb.velocity.y <= 0)
-        //{
-        //    TransitionToState(PlayerState.Grounded);
-        //}
     }
     
     public void TransitionToState(PlayerState newState)
@@ -278,6 +268,11 @@ public class PlayerLocomotion : MonoBehaviour
     }
 
     public void HandleAttack()
+    {
+        AttackMethods();
+    }
+
+    private void AttackMethods()
     {
         animator.SetTrigger("Attack");
         animatorManager.PlayTargetAnimation("standing-jump-start", true);
@@ -342,6 +337,8 @@ public class PlayerLocomotion : MonoBehaviour
             moveDirection += cameraObject.right * inputManager.HorizontalInput;
             moveDirection.Normalize();
             moveDirection.y = 0;
+
+
 
             float targetSpeed = isSprinting ? sprintingSpeed : inputManager.moveAmount >= 0.5f ? runningSpeed : walkingSpeed;
             moveDirection *= targetSpeed;

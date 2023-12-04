@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public GameObject deathEffect;
     Vector3 respawnPos;
+
+    public int currentCoins;
     private void Awake()
     {
         instance = this;
@@ -19,10 +21,14 @@ public class GameManager : MonoBehaviour
         Cursor.visible = false;
 
         respawnPos = PlayerManager.instance.transform.position;
+
+        AddCoins(0);
     }
     public void Respawn()
     {
         StartCoroutine(RespawnWaitTime());
+        PlayerStats.instance.PlayerKilled();
+
     }
 
     IEnumerator RespawnWaitTime()
@@ -34,8 +40,10 @@ public class GameManager : MonoBehaviour
 
         Instantiate(deathEffect, PlayerManager.instance.transform.position + new Vector3 (0f,2f,0f), PlayerManager.instance.transform.rotation);
 
-        
+
         yield return new WaitForSeconds(2f);
+
+        PlayerStats.instance.ResetHealth();
         KnockBackComponent.instance.knockbackCounter = 0;
         KnockBackComponent.instance.isKnocking = false;
 
@@ -49,5 +57,11 @@ public class GameManager : MonoBehaviour
     {
         respawnPos = newSpawnPoint;
         Debug.Log("spawn point set");
+    }
+
+    public void AddCoins(int coinsToAdd)
+    {
+        currentCoins += coinsToAdd;
+        UIManager.instance.coinText.text = ":" + currentCoins;
     }
 }

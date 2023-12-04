@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
@@ -10,6 +11,11 @@ public class UIManager : MonoBehaviour
     [SerializeField]Image blackImage;
     [SerializeField] float fadeSpeed = 2f;
     public bool fadeToBlack, fadeFromBlack;
+
+    public TextMeshProUGUI health;
+    public Image healthImage;
+
+    public TextMeshProUGUI coinText;
 
     private void Awake()
     {

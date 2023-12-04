@@ -15,6 +15,8 @@ public class PlayerStats : MonoBehaviour
 
      float invincibleLength = 2f;
      float invincCounter;
+
+    public Sprite[] healthImages;
     public float InvincibleLength { get { return invincibleLength; } set { invincibleLength = value; } }
     public int Health { get { return currentHealth; } set { currentHealth = value; } }
     public float InvincCounter { get { return invincCounter; } set { invincCounter = value; } }
@@ -23,7 +25,7 @@ public class PlayerStats : MonoBehaviour
         instance = this;
         animator = GetComponent<Animator>(); //get component is not bad if its in awake.
         rumbleActions = GetComponent<RumbleActions>();
-        currentHealth = maxHealth;
+        ResetHealth();
     }
 
     private void Start()
@@ -90,7 +92,7 @@ public class PlayerStats : MonoBehaviour
             KnockBackComponent.instance.knockbackCounter = 0;
             currentHealth = 0;
             GameManager.instance.Respawn();
-            RumbleManager.instance.pad.SetMotorSpeeds(0, 0);
+            //RumbleManager.instance.pad.SetMotorSpeeds(0, 0);
             currentHealth = maxHealth;
             animator.SetFloat("Horizontal", 0f);
             animator.SetFloat("Vertical", 0f);
@@ -101,10 +103,13 @@ public class PlayerStats : MonoBehaviour
 
             
         }
+        UpdateUI();
     }
     public void ResetHealth()
     {
         currentHealth = maxHealth;
+        UIManager.instance.healthImage.enabled = true;
+        UpdateUI();
     }
     public void AddHealth(int amountToHeal)
     {
@@ -113,8 +118,44 @@ public class PlayerStats : MonoBehaviour
         {
             currentHealth = maxHealth;
         }
+        UpdateUI();
+    }
+
+    public void UpdateUI()
+    {
+        UIManager.instance.health.text = currentHealth.ToString();
+
+        switch (currentHealth)
+        {
+            case 5:
+                UIManager.instance.healthImage.sprite = healthImages[4];
+                break;
+            case 4:
+                UIManager.instance.healthImage.sprite = healthImages[3];
+                break;
+            case 3:
+                UIManager.instance.healthImage.sprite = healthImages[2];
+                break;
+            case 2:
+                UIManager.instance.healthImage.sprite = healthImages[1];
+                break;
+            case 1:
+                UIManager.instance.healthImage.sprite = healthImages[0];
+                break;
+
+            case 0:
+                UIManager.instance.healthImage.enabled = false;
+                break;
+        }
     }
 
 
-    //ui health add here//
+    public void PlayerKilled()
+    {
+        currentHealth = 0;
+        UpdateUI();
+    }
+
+    
+        //ui health add here//
 }

@@ -6,6 +6,8 @@ public class CoinPickup : MonoBehaviour
 {
     [SerializeField] int value;
     [SerializeField] GameObject pickupEffect;
+
+    [SerializeField] int soundToPlay;
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +25,7 @@ public class CoinPickup : MonoBehaviour
         if(other.tag == "Player")
         {
             Instantiate(pickupEffect, transform.position, transform.rotation);
+            AudioManager.instance.PlaySFX(soundToPlay);
             GameManager.instance.AddCoins(value);
 
 

@@ -32,6 +32,8 @@ public class InputManager : MonoBehaviour
     [SerializeField] private bool attackInput;
     [SerializeField] private bool previousAttackInput = false;
 
+    [SerializeField] private bool pauseInput;
+
 
     private void Awake()
     {
@@ -62,6 +64,8 @@ public class InputManager : MonoBehaviour
 
             playerControls.PlayerActions.Attack.performed += i => attackInput = true;
             playerControls.PlayerActions.Attack.canceled += i => attackInput = false;
+
+            playerControls.PlayerActions.Pause.performed += i => pauseInput = !pauseInput;
         }
 
         playerControls.Enable();
@@ -73,6 +77,22 @@ public class InputManager : MonoBehaviour
         HandleSprintingInput(playerLocomotion.isSprinting);
         HandleJumpingInput();
         HandleAttackInput();
+        HandlePauseInput();
+    }
+
+    private void HandlePauseInput()
+    {
+        if (pauseInput)
+        {
+
+            TogglePause();
+            pauseInput = false;
+        }
+    }
+
+    private void TogglePause()
+    {
+        GameManager.instance.PauseUnpause();
     }
 
     private void HandleJumpingInput()

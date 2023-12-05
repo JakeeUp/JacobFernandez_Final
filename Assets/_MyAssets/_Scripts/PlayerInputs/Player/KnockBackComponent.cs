@@ -13,6 +13,7 @@ public class KnockBackComponent : MonoBehaviour
     [SerializeField] public float knockBackLength = 0.5f;
     [SerializeField] public float knockbackCounter;
     [SerializeField] public Vector2 knockbackPower;
+    [SerializeField] int soundToPlay;
 
     private void Awake()
     {
@@ -29,6 +30,8 @@ public class KnockBackComponent : MonoBehaviour
             isKnocking = true;
             knockbackCounter = knockBackLength;
             Debug.Log("Knocked");
+
+            AudioManager.instance.PlaySFX(soundToPlay);
 
             rb.AddForce(new Vector3(0, knockbackPower.y, 0), ForceMode.Impulse);
         }

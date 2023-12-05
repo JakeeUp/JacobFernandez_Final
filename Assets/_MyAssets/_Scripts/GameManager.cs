@@ -16,10 +16,10 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
+
         Cursor.lockState = CursorLockMode.Locked;
 
         Cursor.visible = false;
-
         respawnPos = PlayerManager.instance.transform.position;
 
         AddCoins(0);
@@ -64,4 +64,38 @@ public class GameManager : MonoBehaviour
         currentCoins += coinsToAdd;
         UIManager.instance.coinText.text = ":" + currentCoins;
     }
+
+    public void PauseUnpause()
+    {
+        if(UIManager.instance.PauseScreen.activeInHierarchy)
+        {
+            UIManager.instance.PauseScreen.SetActive(false);
+            Time.timeScale = 1;
+            UpdateCursorState(false);
+        }
+        else
+        {
+            UIManager.instance.PauseScreen.SetActive(true);
+            UIManager.instance.CloseOptions();
+            Time.timeScale = 0;
+            UpdateCursorState(true);
+        }
+    }
+
+    public void UpdateCursorState(bool isGamePaused)
+    {
+        if (isGamePaused)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+    }
+
+   
+
 }

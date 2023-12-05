@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class AudioManager : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class AudioManager : MonoBehaviour
     public AudioSource[] sfx;
 
     public int levelMusicToPlay;
+
+    public AudioMixerGroup musicMixer, sfxMixer;
 
     //private int currentTrack;
 
@@ -26,7 +29,10 @@ public class AudioManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        //if(Input.GetKeyDown(KeyCode.M))
+        //{
+        //    PlaySFX(5); 
+        //}
     }
 
     private void PlayMusic(int musicToPlay)
@@ -36,5 +42,20 @@ public class AudioManager : MonoBehaviour
             music[i].Stop();
         }
         music[musicToPlay].Play();
+    }
+
+    public void PlaySFX(int sfxToPlay)
+    {
+        sfx[sfxToPlay].Play();
+    }
+
+    public void SetMusicLevel()
+    {
+        musicMixer.audioMixer.SetFloat("MusicVol", UIManager.instance.musicVolSlider.value);
+    }
+
+    public void SetSFXLevel()
+    {
+        musicMixer.audioMixer.SetFloat("SfxVol", UIManager.instance.sfxVolSlider.value);
     }
 }

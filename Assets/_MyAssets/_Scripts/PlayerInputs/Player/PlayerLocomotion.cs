@@ -75,12 +75,7 @@ public class PlayerLocomotion : MonoBehaviour
     [SerializeField] private float airControl = 2f;
     [SerializeField] private float airRotationSpeed = 5f;
 
-    [Header("Platform")]
-    [SerializeField] private Transform currentPlatform;
-
-
-    private Vector3 platformVelocityLastFrame;
-    private Vector3 platformVelocity;
+    
     #endregion
 
     private void Awake()
@@ -214,15 +209,7 @@ public class PlayerLocomotion : MonoBehaviour
         {
             ApplyAirControl();
         }
-        if (currentPlatform != null)
-        {
-            Vector3 newPlatformPosition = currentPlatform.position;
-            platformVelocity = (newPlatformPosition - platformPositionLastFrame) / Time.deltaTime;
-
-            rb.MovePosition(rb.position + platformVelocity * Time.deltaTime);
-
-            platformPositionLastFrame = newPlatformPosition;
-        }
+        
 
 
     }
@@ -385,33 +372,25 @@ public class PlayerLocomotion : MonoBehaviour
    
     public void SetCurrentPlatform(Transform platform)
     {
-        currentPlatform = platform;
-        if (currentPlatform != null)
-        {
-            Debug.Log("Current platform set to: " + currentPlatform.name);
-        }
-        else
-        {
-            Debug.Log("Current platform set to null.");
-        }
+        
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("MovingPlatform"))
-        {
-            this.transform.SetParent(collision.transform);
-            rb.isKinematic = true; 
-        }
+        //if (collision.gameObject.CompareTag("MovingPlatform"))
+        //{
+        //    this.transform.SetParent(collision.transform);
+        //    rb.isKinematic = true; 
+        //}
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("MovingPlatform"))
-        {
-            this.transform.SetParent(null);
-            rb.isKinematic = false; 
-        }
+        //if (collision.gameObject.CompareTag("MovingPlatform"))
+        //{
+        //    this.transform.SetParent(null);
+        //    rb.isKinematic = false; 
+        //}
     }
     private void HandleRotation()
     {

@@ -48,7 +48,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   value: 1
-  pickupEffect: {fileID: 0}
+  pickupEffect: {fileID: 8208267439333018315, guid: 1eea00523455f294999cb13141350a22,
+    type: 3}
+  soundToPlay: 5
 --- !u!114 &5044659261957429452
 MonoBehaviour:
   m_ObjectHideFlags: 0

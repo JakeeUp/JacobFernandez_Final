@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
+
+    [SerializeField] int soundToPlay;
+
     public static PlayerStats instance;
 
     private Animator animator;
@@ -153,6 +156,7 @@ public class PlayerStats : MonoBehaviour
     public void PlayerKilled()
     {
         currentHealth = 0;
+        AudioManager.instance.PlaySFX(soundToPlay);
         UpdateUI();
     }
 

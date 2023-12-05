@@ -5,6 +5,7 @@ using UnityEngine;
 public class CheckpointComponent : MonoBehaviour
 {
     [SerializeField] GameObject cpOn, cpOff;
+    [SerializeField] int soundToPlay;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -22,7 +23,7 @@ public class CheckpointComponent : MonoBehaviour
             cpOff.SetActive(false);
             cpOn.SetActive(true);
 
-            //AudioManager.instance.PlaySFX(soundToPlay);
+            AudioManager.instance.PlaySFX(soundToPlay);
         }
     }
 }

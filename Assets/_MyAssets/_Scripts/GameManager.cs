@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    KnockBackComponent knock;
     public GameObject deathEffect;
     Vector3 respawnPos;
 
@@ -12,7 +13,7 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
-       
+        knock = FindObjectOfType<KnockBackComponent>();
     }
     private void Start()
     {
@@ -44,8 +45,8 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         PlayerStats.instance.ResetHealth();
-        KnockBackComponent.instance.knockbackCounter = 0;
-        KnockBackComponent.instance.isKnocking = false;
+        knock.knockbackCounter = 0;
+        knock.isKnocking = false;
 
         UIManager.instance.fadeFromBlack = true; 
         PlayerManager.instance.transform.position = respawnPos;

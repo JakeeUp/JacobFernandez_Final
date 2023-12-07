@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
-
+    KnockBackComponent knock;
     [SerializeField] int soundToPlay;
 
     public static PlayerStats instance;
@@ -27,6 +27,7 @@ public class PlayerStats : MonoBehaviour
     {
         instance = this;
         animator = GetComponent<Animator>(); //get component is not bad if its in awake.
+        knock = GetComponent<KnockBackComponent>();
         rumbleActions = GetComponent<RumbleActions>();
         ResetHealth();
     }
@@ -78,7 +79,7 @@ public class PlayerStats : MonoBehaviour
             currentHealth--;
             RespawnResetParams();
 
-            KnockBackComponent.instance.Knockback(); //make not a singleton, only 1 exist need for enemies 
+            knock.Knockback(); //make not a singleton, only 1 exist need for enemies 
             
         }
         
@@ -92,7 +93,7 @@ public class PlayerStats : MonoBehaviour
     {
         if (currentHealth <= 0)
         {
-            KnockBackComponent.instance.knockbackCounter = 0;
+            knock.knockbackCounter = 0;
             currentHealth = 0;
             GameManager.instance.Respawn();
             //RumbleManager.instance.pad.SetMotorSpeeds(0, 0);

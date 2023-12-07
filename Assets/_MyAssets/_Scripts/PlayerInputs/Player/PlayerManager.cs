@@ -8,6 +8,7 @@ public class PlayerManager : MonoBehaviour
     Animator animator;
     CameraManager cameraManager;
     JumpComponent jump;
+    public HitBox hit;
     PlayerLocomotion playerLocomotion;
 
     public bool isInteracting;
@@ -19,6 +20,10 @@ public class PlayerManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        if (hit != null)
+        {
+            hit = hit.GetComponent<HitBox>();
+        }
         animator = GetComponent<Animator>();
         inputManager = GetComponent<InputManager>();
         cameraManager = FindObjectOfType<CameraManager>();
@@ -44,5 +49,15 @@ public class PlayerManager : MonoBehaviour
       //  isInteracting = animator.GetBool("isInteracting");
         jump.isJumping = animator.GetBool("isJumping");
         animator.SetBool("isGrounded", jump.isGrounded);
+    }
+
+    private void Attack()
+    {
+        hit.EnableAttack();
+    }
+
+    private void AttackDone()
+    {
+        hit.DisableAttack();
     }
 }

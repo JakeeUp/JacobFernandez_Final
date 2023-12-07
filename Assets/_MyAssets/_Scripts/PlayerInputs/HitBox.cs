@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class HitBox : MonoBehaviour
 {
+    
     public GameObject hitbox; // Assign your hitbox GameObject in the inspector
 
     // Call this function to enable the hitbox
-    public void EnableHitbox()
+    public void EnableAttack()
     {
         if (hitbox != null)
         {
@@ -16,7 +17,7 @@ public class HitBox : MonoBehaviour
     }
 
     // Call this function to disable the hitbox
-    public void DisableHitbox()
+    public void DisableAttack()
     {
         if (hitbox != null)
         {

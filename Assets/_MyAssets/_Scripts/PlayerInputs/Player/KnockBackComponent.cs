@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class KnockBackComponent : MonoBehaviour
 {
-    public static KnockBackComponent instance;
-    private Rigidbody rb;
+    [SerializeField]private Rigidbody rb;
     PlayerLocomotion playerLocomotion;
     PlayerStats playerStats;
 
@@ -17,7 +16,6 @@ public class KnockBackComponent : MonoBehaviour
 
     private void Awake()
     {
-        instance = this;
         rb = GetComponent<Rigidbody>();
         playerLocomotion = GetComponent<PlayerLocomotion>();
         playerStats = GetComponent<PlayerStats>();
@@ -53,10 +51,10 @@ public class KnockBackComponent : MonoBehaviour
                 playerLocomotion.moveDirection.y = 0; 
             }
         }
-        if(playerStats.Health <= 0)
-        {
-            knockbackCounter = 0;
-        }
+        //if(playerStats.Health <= 0)
+        //{
+        //    knockbackCounter = 0;
+        //}
         
     }
     

@@ -67,7 +67,8 @@ public class InputBuffer
     private void PlayerAttack()
     {
         player.Animator.SetTrigger("Attack");
-        AnimatorManager.instance.PlayTargetAnimation("standing-jump-start", true);
+        Debug.Log("trigger");
+        AnimatorManager.instance.PlayTargetAnimation("Attack", true);
         InputManager.instance.inputBuffer.ClearInput();
     }
 }

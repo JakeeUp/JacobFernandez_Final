@@ -107,7 +107,6 @@ public class InputManager : MonoBehaviour
     {
         playerControls.Disable();
     }
-
     private void HandleMovementInput()
     {
         _verticalInput = movementInput.y;
@@ -117,12 +116,14 @@ public class InputManager : MonoBehaviour
         _cameraInputX = cameraInput.x;
 
         moveAmount = Mathf.Clamp01(Mathf.Abs(_horizontalInput) + Mathf.Abs(_verticalInput));
+        
         animatorManager.UpdateAnimatorValues(0, moveAmount, playerLocomotion.isSprinting);
     }
 
     private void HandleSprintingInput(bool trySprint)
     {
-        if (b_Input )
+        //fix this
+        if (b_Input)
         {
             playerLocomotion.isSprinting = true;
         }
@@ -131,6 +132,8 @@ public class InputManager : MonoBehaviour
             playerLocomotion.isSprinting = false;
         }
 
+
+
     }
 
     public void HandleAttackInput()
@@ -138,6 +141,8 @@ public class InputManager : MonoBehaviour
         if (attackInput && !previousAttackInput)
         {
             inputBuffer.BufferInput("Attack");
+            Debug.Log("trigger");
+            
             previousAttackInput = attackInput;
         }
 

@@ -262,7 +262,6 @@ public class PlayerLocomotion : MonoBehaviour
     private void AttackMethods()
     {
         animator.SetTrigger("Attack");
-        animatorManager.PlayTargetAnimation("standing-jump-start", true);
         inputManager.inputBuffer.ClearInput();
     }
 

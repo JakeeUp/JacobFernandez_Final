@@ -116,6 +116,8 @@ public class InputManager : MonoBehaviour
         _cameraInputX = cameraInput.x;
 
         moveAmount = Mathf.Clamp01(Mathf.Abs(_horizontalInput) + Mathf.Abs(_verticalInput));
+
+        playerLocomotion.isWalking = moveAmount > 0;
         
         animatorManager.UpdateAnimatorValues(0, moveAmount, playerLocomotion.isSprinting);
     }
@@ -123,7 +125,7 @@ public class InputManager : MonoBehaviour
     private void HandleSprintingInput(bool trySprint)
     {
         //fix this
-        if (b_Input)
+        if (b_Input && playerLocomotion.isWalking)
         {
             playerLocomotion.isSprinting = true;
         }

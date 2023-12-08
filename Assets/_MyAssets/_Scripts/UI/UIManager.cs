@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     public Image healthImage;
 
     public TextMeshProUGUI coinText;
+    public TextMeshProUGUI specialText;
 
     public GameObject PauseScreen, OptionsScreen;
 

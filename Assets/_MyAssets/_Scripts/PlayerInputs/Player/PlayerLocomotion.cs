@@ -60,6 +60,7 @@ public class PlayerLocomotion : MonoBehaviour
     [Header("Movement Flags")]
     [SerializeField] private bool _isSprinting;
     public bool isWalking = false;
+    public bool stopMove;
 
 
     [Header("Movement Speeds")]
@@ -317,7 +318,7 @@ public class PlayerLocomotion : MonoBehaviour
     }
     private void HandleMovement()
     {
-        if (!knockBack.isKnocking)
+        if (!knockBack.isKnocking )
         {
             moveDirection = cameraObject.forward * inputManager.VerticalInput;
             moveDirection += cameraObject.right * inputManager.HorizontalInput;
@@ -336,7 +337,6 @@ public class PlayerLocomotion : MonoBehaviour
             }
             else
             {
-
                 if (playerJump.isGrounded)
                 {
                     Vector3 movementVelocity = moveDirection;
@@ -364,11 +364,22 @@ public class PlayerLocomotion : MonoBehaviour
                 knockBack.isKnocking = false;
             }
         }
+
+       
     }
 
-   
+    public void DisableMovement()
+    {
+        rb.constraints = RigidbodyConstraints.FreezePosition;
+    }
 
-   
+    public void EnableMovement()
+    {
+        rb.constraints = RigidbodyConstraints.None;
+    }
+
+
+
     public void SetCurrentPlatform(Transform platform)
     {
         

@@ -10,6 +10,7 @@ public class PlayerStats : MonoBehaviour
     public static PlayerStats instance;
 
     private Animator animator;
+    UIManager uIManager;
 
     RumbleActions rumbleActions;
 
@@ -26,14 +27,17 @@ public class PlayerStats : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        uIManager = GetComponent<UIManager>();
         animator = GetComponent<Animator>(); //get component is not bad if its in awake.
         knock = GetComponent<KnockBackComponent>();
         rumbleActions = GetComponent<RumbleActions>();
-        ResetHealth();
     }
 
     private void Start()
     {
+        ResetHealth();
+
+
     }
     public delegate void HurtPlayer();
     public event HurtPlayer DamagePlayer;
@@ -42,7 +46,13 @@ public class PlayerStats : MonoBehaviour
     {
         PlayerDamageFlashing(); //make this corutine call when taking damage// <<- faster and cleaner 
     }
+    public void ResetHealth()
+    {
+        currentHealth = maxHealth;
+        UIManager.instance.healthImage.enabled = true;
 
+        UpdateUI();
+    }
     private void PlayerDamageFlashing()
     {
         if (invincibleLength > 0)
@@ -109,12 +119,7 @@ public class PlayerStats : MonoBehaviour
         }
         UpdateUI();
     }
-    public void ResetHealth()
-    {
-        currentHealth = maxHealth;
-        UIManager.instance.healthImage.enabled = true;
-        UpdateUI();
-    }
+    
     public void AddHealth(int amountToHeal)
     {
         currentHealth += amountToHeal;
@@ -161,6 +166,12 @@ public class PlayerStats : MonoBehaviour
         UpdateUI();
     }
 
-    
+    public void AddToMaxHealth()
+    {
+        maxHealth++;
+        currentHealth = maxHealth;
+        Debug.Log("Health Upgrade");
+        UpdateUI();
+    }
         //ui health add here//
 }

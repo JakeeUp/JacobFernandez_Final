@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,7 +10,11 @@ public class GameManager : MonoBehaviour
     public GameObject deathEffect;
     Vector3 respawnPos;
 
+    [SerializeField] int levelEndMusic = 2;
+    [SerializeField] string levelToLoad;
+
     public int currentCoins;
+    public int specialCoins;
     private void Awake()
     {
         instance = this;
@@ -24,6 +29,7 @@ public class GameManager : MonoBehaviour
         respawnPos = PlayerManager.instance.transform.position;
 
         AddCoins(0);
+        AddSpecial(0);
     }
     public void Respawn()
     {
@@ -65,7 +71,11 @@ public class GameManager : MonoBehaviour
         currentCoins += coinsToAdd;
         UIManager.instance.coinText.text = ":" + currentCoins;
     }
-
+    public void AddSpecial(int specialToAdd)
+    {
+        specialCoins += specialToAdd;
+        UIManager.instance.specialText.text = ":" + specialCoins;
+    }
     public void PauseUnpause()
     {
         if(UIManager.instance.PauseScreen.activeInHierarchy)
@@ -95,6 +105,18 @@ public class GameManager : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
+    }
+
+    public IEnumerator LevelEndCo()
+    {
+        AudioManager.instance.PlayMusic(levelEndMusic);
+        PlayerLocomotion.instance.DisableMovement();
+        PlayerLocomotion.instance.Animator.SetBool("isLevelEnd", true);
+        yield return new WaitForSeconds(4.5f);
+        Debug.Log("level ended");
+        SceneManager.LoadScene(levelToLoad);
+
+
     }
 
    

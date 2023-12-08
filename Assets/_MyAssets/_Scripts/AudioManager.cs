@@ -35,7 +35,7 @@ public class AudioManager : MonoBehaviour
         //}
     }
 
-    private void PlayMusic(int musicToPlay)
+    public void PlayMusic(int musicToPlay)
     {
         for (int i = 0; i < music.Length; i++)
         {

@@ -113,8 +113,23 @@ public class GameManager : MonoBehaviour
         PlayerLocomotion.instance.DisableMovement();
         PlayerLocomotion.instance.Animator.SetBool("isLevelEnd", true);
         yield return new WaitForSeconds(4.5f);
+        PlayerPrefs.SetInt(SceneManager.GetActiveScene().name + "_unlocked", 1);
         Debug.Log("level ended");
+
+
+        if (PlayerPrefs.HasKey(SceneManager.GetActiveScene().name + "_coins"))
+        {
+            if (currentCoins > PlayerPrefs.GetInt(SceneManager.GetActiveScene().name + "_coins"))
+            {
+                PlayerPrefs.SetInt(SceneManager.GetActiveScene().name + "_coins", currentCoins);
+            }
+        }
+        else
+        {
+            PlayerPrefs.SetInt(SceneManager.GetActiveScene().name + "_coins", currentCoins);
+        }
         SceneManager.LoadScene(levelToLoad);
+
 
 
     }

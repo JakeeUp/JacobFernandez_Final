@@ -7,12 +7,13 @@ using UnityEngine.InputSystem;
 public class InputManager : MonoBehaviour
 {
     public static InputManager instance;
-    public InputBuffer inputBuffer = new InputBuffer();
+    //public InputBuffer inputBuffer = new InputBuffer();
     public PlayerControls playerControls;
     public PlayerInput playerInput;
     PlayerLocomotion playerLocomotion;
     JumpComponent jump;
     PlayerStats stats;
+    public InputBuffer inputBuffer;
     AnimatorManager animatorManager;
 
     [SerializeField] private Vector2 movementInput;
@@ -29,7 +30,7 @@ public class InputManager : MonoBehaviour
     [SerializeField] private bool b_Input;
     [SerializeField] public bool jump_Input;
 
-    [SerializeField] private bool attackInput;
+    [SerializeField] public bool attackInput;
     [SerializeField] private bool previousAttackInput = false;
 
     [SerializeField] private bool pauseInput;
@@ -40,6 +41,7 @@ public class InputManager : MonoBehaviour
 
         if (instance == null)
             instance = this;
+        inputBuffer = GetComponent<InputBuffer>();
         playerInput = GetComponent<PlayerInput>();
         stats = GetComponent<PlayerStats>();
         animatorManager = GetComponent<AnimatorManager>();
@@ -70,13 +72,18 @@ public class InputManager : MonoBehaviour
 
         playerControls.Enable();
     }
+    private void Update()
+    {
+       HandleAttackInput(); 
+        InputBuffer.instance.UpdateBuffer();
+
+    }
 
     public void HandleAllInputs()
     {
         HandleMovementInput();
         HandleSprintingInput(playerLocomotion.isSprinting);
         HandleJumpingInput();
-        HandleAttackInput();
         HandlePauseInput();
     }
 

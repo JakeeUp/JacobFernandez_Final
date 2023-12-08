@@ -1025,7 +1025,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deathEffect: {fileID: 295033725911166243, guid: a9e707b97d1fef0408081b985c7a3356,
     type: 3}
+  levelEndMusic: 2
+  levelToLoad: LevelSelect
   currentCoins: 0
+  specialCoins: 0
 --- !u!114 &3337810877414336874
 MonoBehaviour:
   m_ObjectHideFlags: 0

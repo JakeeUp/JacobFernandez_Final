@@ -440,22 +440,22 @@ public class PlayerLocomotion : MonoBehaviour
     }
     void OnDrawGizmos()
     {
-        if (!UnityEditor.Selection.Contains(gameObject)) return;
+        //if (!UnityEditor.Selection.Contains(gameObject)) return;
 
 
-        Vector3 rayCastOrigin = transform.position + Vector3.up * rayCastHeightOffset;
-        Vector3 rayCastDirection = Vector3.down * maxDistance;
+        //Vector3 rayCastOrigin = transform.position + Vector3.up * rayCastHeightOffset;
+        //Vector3 rayCastDirection = Vector3.down * maxDistance;
 
-        Gizmos.color = playerJump.isGrounded ? Color.green : Color.red;
+        //Gizmos.color = playerJump.isGrounded ? Color.green : Color.red;
 
-        Gizmos.DrawRay(rayCastOrigin, rayCastDirection);
+        //Gizmos.DrawRay(rayCastOrigin, rayCastDirection);
 
-        Gizmos.DrawWireSphere(rayCastOrigin, 0.2f);
+        //Gizmos.DrawWireSphere(rayCastOrigin, 0.2f);
 
-        if (Physics.SphereCast(rayCastOrigin, 0.2f, Vector3.down, out RaycastHit hit, maxDistance, groundLayer))
-        {
-            Gizmos.DrawWireSphere(rayCastOrigin + Vector3.down * hit.distance, 0.2f);
-        }
+        //if (Physics.SphereCast(rayCastOrigin, 0.2f, Vector3.down, out RaycastHit hit, maxDistance, groundLayer))
+        //{
+        //    Gizmos.DrawWireSphere(rayCastOrigin + Vector3.down * hit.distance, 0.2f);
+        //}
     }
 
     private IEnumerator SetGroundedWithDelay()

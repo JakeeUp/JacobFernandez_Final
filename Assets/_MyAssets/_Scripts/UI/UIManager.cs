@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -21,6 +22,8 @@ public class UIManager : MonoBehaviour
     public GameObject PauseScreen, OptionsScreen;
 
     public Slider musicVolSlider, sfxVolSlider;
+
+    public string levelSelect, mainMenu;
 
     private void Awake()
     {
@@ -72,12 +75,14 @@ public class UIManager : MonoBehaviour
 
     public void LevelSelect()
     {
-
+        SceneManager.LoadScene(levelSelect);
+        Time.timeScale = 1f;
     }
 
     public void MainMenu()
     {
-
+        SceneManager.LoadScene(mainMenu);
+        Time.timeScale = 1;
     }
 
     public void SetMusicLevel()

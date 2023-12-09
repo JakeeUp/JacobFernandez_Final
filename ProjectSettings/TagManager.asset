@@ -8,6 +8,7 @@ TagManager:
   - MovingPlatform
   - Enemy
   - UICharacter
+  - Hitbox
   layers:
   - Default
   - TransparentFX

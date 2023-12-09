@@ -2,16 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 
 public class LSUIManager : MonoBehaviour
 {
     public static LSUIManager instance;
 
-    public Text lNameText;
+    public TextMeshProUGUI lNameText;
     public GameObject lNamePanel;
 
-    public Text coinsText;
+    public TextMeshProUGUI coinsText;
 
     private void Awake()
     {

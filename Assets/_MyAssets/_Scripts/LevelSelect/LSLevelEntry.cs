@@ -39,7 +39,7 @@ public class LSLevelEntry : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab) && canLoadLevel && levelUnlocked && !levelLoading)
+        if (Input.GetKeyDown(KeyCode.Space) && canLoadLevel && levelUnlocked && !levelLoading)
         {
             StartCoroutine(LevelLoadCo());
             levelLoading = true;

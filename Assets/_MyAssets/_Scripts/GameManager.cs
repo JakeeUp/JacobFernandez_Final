@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
 
     public int currentCoins;
     public int specialCoins;
+
+    public bool isRespawning;
     private void Awake()
     {
         instance = this;
@@ -49,6 +51,8 @@ public class GameManager : MonoBehaviour
 
 
         yield return new WaitForSeconds(2f);
+
+        isRespawning = true;
 
         PlayerStats.instance.ResetHealth();
         knock.knockbackCounter = 0;

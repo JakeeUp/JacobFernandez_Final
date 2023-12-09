@@ -9,6 +9,7 @@ public class ButtonController : MonoBehaviour
     private Vector3 buttonUp;
 
     public bool isOnOff;
+    [SerializeField] int buttonClick;
 
     // Start is called before the first frame update
     void Start()
@@ -37,6 +38,7 @@ public class ButtonController : MonoBehaviour
                 {
                     button.position = buttonDown.position;
                     isPressed = true;
+                    AudioManager.instance.PlaySFX(buttonClick);
                 }
             }
             else
@@ -45,6 +47,7 @@ public class ButtonController : MonoBehaviour
                 {
                     button.position = buttonDown.position;
                     isPressed = true;
+                    AudioManager.instance.PlaySFX(buttonClick);
                 }
             }
         }
